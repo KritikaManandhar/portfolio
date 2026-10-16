@@ -116,97 +116,211 @@ body {
   background: #A67D56;
 }
 
-/* Tactile Scroll Crumpling, Origami Paper Airplane Unfold & Soaring Animations */
-@keyframes scroll-crumple {
+/* Tactile Scroll Crumpling, 3D Origami Wing Unfold & Soaring Animations */
+@keyframes sheet-crumple {
   0% {
+    clip-path: polygon(0% 0%, 50% 0%, 100% 0%, 100% 50%, 100% 100%, 50% 100%, 0% 100%, 0% 50%);
     transform: scale(1) rotate(0deg) skew(0deg);
-    filter: drop-shadow(0 16px 36px rgba(40,18,6,0.3));
+    filter: drop-shadow(0 16px 36px rgba(35, 16, 6, 0.32)) contrast(100%);
     opacity: 1;
   }
-  20% {
-    transform: scale(0.9, 0.94) rotate(-3deg) skewX(6deg);
-    filter: drop-shadow(0 14px 30px rgba(40,18,6,0.35)) contrast(110%);
-    opacity: 0.95;
+  15% {
+    clip-path: polygon(6% 4%, 48% 1%, 94% 5%, 98% 48%, 93% 95%, 52% 98%, 7% 94%, 2% 52%);
+    transform: scale(0.93, 0.95) rotate(-2.5deg) skewX(4deg);
+    filter: drop-shadow(0 18px 30px rgba(35, 16, 6, 0.42)) contrast(118%);
+    opacity: 0.98;
   }
-  45% {
-    transform: scale(0.65, 0.7) rotate(7deg) skewX(-9deg) skewY(5deg);
-    filter: drop-shadow(0 12px 24px rgba(40,18,6,0.4)) contrast(125%);
-    opacity: 0.85;
+  35% {
+    clip-path: polygon(14% 10%, 46% 5%, 86% 12%, 92% 46%, 84% 88%, 54% 92%, 16% 86%, 8% 54%);
+    transform: scale(0.76, 0.8) rotate(6deg) skewX(-8deg) skewY(5deg);
+    filter: drop-shadow(0 16px 26px rgba(35, 16, 6, 0.52)) contrast(138%);
+    opacity: 0.92;
   }
-  70% {
-    transform: scale(0.38, 0.42) rotate(-12deg) skewX(9deg);
-    filter: drop-shadow(0 8px 18px rgba(40,18,6,0.45));
-    opacity: 0.6;
+  55% {
+    clip-path: polygon(25% 20%, 52% 14%, 78% 22%, 84% 52%, 76% 80%, 48% 84%, 22% 78%, 15% 48%);
+    transform: scale(0.5, 0.54) rotate(-12deg) skewX(12deg) skewY(-6deg);
+    filter: drop-shadow(0 12px 20px rgba(35, 16, 6, 0.62)) contrast(158%);
+    opacity: 0.82;
+  }
+  75% {
+    clip-path: polygon(36% 32%, 54% 26%, 68% 30%, 72% 50%, 66% 68%, 46% 72%, 32% 66%, 28% 48%);
+    transform: scale(0.26, 0.3) rotate(22deg) skewX(-6deg);
+    filter: drop-shadow(0 8px 14px rgba(35, 16, 6, 0.68)) contrast(178%);
+    opacity: 0.52;
   }
   90% {
-    transform: scale(0.18, 0.2) rotate(20deg);
+    clip-path: polygon(42% 40%, 54% 36%, 60% 42%, 62% 54%, 56% 62%, 44% 60%, 38% 54%, 40% 44%);
+    transform: scale(0.1, 0.12) rotate(-34deg);
     opacity: 0.25;
   }
   100% {
-    transform: scale(0.06, 0.06) rotate(30deg);
+    clip-path: polygon(46% 45%, 53% 44%, 55% 52%, 52% 56%, 45% 55%, 44% 48%);
+    transform: scale(0.02, 0.02) rotate(48deg);
     opacity: 0;
   }
 }
 
-@keyframes crumple-crunch {
+@keyframes crumple-squeeze {
   0% {
     opacity: 0;
-    transform: scale(0.15) rotate(-35deg);
+    transform: scale(0.08) rotate(-65deg);
+    filter: drop-shadow(0 4px 8px rgba(30, 12, 4, 0.3));
   }
-  35% {
+  12% {
     opacity: 1;
-    transform: scale(1.15) rotate(14deg);
+    transform: scale(1.18) rotate(18deg);
+    filter: drop-shadow(0 18px 30px rgba(30, 12, 4, 0.48));
+  }
+  28% {
+    /* Crunch 1: Deep vertical compression / squash */
+    transform: scale(0.76, 1.28) rotate(-24deg) skewX(9deg);
+    filter: drop-shadow(0 14px 24px rgba(30, 12, 4, 0.55));
+  }
+  44% {
+    /* Crunch 2: Counter horizontal compression / twist */
+    transform: scale(1.26, 0.74) rotate(20deg) skewY(-8deg);
+    filter: drop-shadow(0 20px 32px rgba(30, 12, 4, 0.52));
+  }
+  60% {
+    /* Elastic snapback */
+    transform: scale(0.9, 1.14) rotate(-10deg);
+  }
+  72% {
+    /* Micro-tremor 1 (paper fibers tension) */
+    transform: scale(1.05, 0.95) rotate(5deg);
+  }
+  82% {
+    /* Micro-tremor 2 (dense paper ball quiver) */
+    transform: scale(0.94, 1.02) rotate(-3deg);
+  }
+  92% {
+    /* Tension hold right before exploding open */
+    transform: scale(0.88, 0.9) rotate(1deg);
+    filter: drop-shadow(0 10px 18px rgba(30, 12, 4, 0.6));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.06) rotate(0deg);
+    filter: drop-shadow(0 22px 34px rgba(30, 12, 4, 0.45));
+  }
+}
+
+@keyframes crumple-burst-out {
+  0% {
+    transform: scale(0.35) rotate(-15deg);
+    opacity: 0.3;
+  }
+  60% {
+    transform: scale(1.06) rotate(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes crunch-shockwave {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes wing-unfold-left {
+  0% {
+    transform: perspective(800px) rotateY(-110deg) scaleX(0.18) scaleY(0.75);
+    opacity: 0.15;
+    filter: brightness(0.75);
   }
   55% {
-    transform: scale(0.9) rotate(-10deg);
+    transform: perspective(800px) rotateY(-18deg) scaleX(1.06) scaleY(1.02);
+    opacity: 1;
+    filter: brightness(1.05);
   }
-  75% {
-    transform: scale(1.05) rotate(5deg);
+  80% {
+    transform: perspective(800px) rotateY(4deg) scaleX(0.98) scaleY(0.99);
+    opacity: 1;
   }
   100% {
+    transform: perspective(800px) rotateY(0deg) scaleX(1) scaleY(1);
     opacity: 1;
-    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
   }
 }
 
-@keyframes plane-unfold {
+@keyframes wing-unfold-right {
   0% {
-    opacity: 0.4;
-    transform: scale(0.4) rotate(-22deg) rotateX(60deg);
+    transform: perspective(800px) rotateY(110deg) scaleX(0.18) scaleY(0.75);
+    opacity: 0.15;
+    filter: brightness(0.7);
   }
-  40% {
+  55% {
+    transform: perspective(800px) rotateY(18deg) scaleX(1.06) scaleY(1.02);
     opacity: 1;
-    transform: scale(1.2) rotate(8deg) rotateX(20deg);
+    filter: brightness(1.03);
   }
-  75% {
-    transform: scale(0.96) rotate(-3deg) rotateX(10deg);
+  80% {
+    transform: perspective(800px) rotateY(-4deg) scaleX(0.98) scaleY(0.99);
+    opacity: 1;
   }
   100% {
+    transform: perspective(800px) rotateY(0deg) scaleX(1) scaleY(1);
     opacity: 1;
-    transform: scale(1) rotate(0deg) rotateX(12deg);
+    filter: brightness(1);
+  }
+}
+
+@keyframes stamp-press {
+  0% {
+    transform: scale(2.6) rotate(48deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.9) rotate(14deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1.08) rotate(14deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(14deg);
+    opacity: 1;
   }
 }
 
 @keyframes airplane-soar {
   0% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1) rotate(0deg) rotateX(12deg) rotateZ(-5deg);
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg) rotateX(10deg) rotateZ(-4deg);
   }
-  16% {
+  15% {
+    /* Aerodynamic dip / wind gust catch */
     opacity: 1;
-    transform: translate3d(-40px, 25px, 0) scale(1.04) rotate(-8deg) rotateX(20deg) rotateZ(-14deg);
+    transform: translate3d(-50px, 30px, 40px) scale(1.05) rotate(-12deg) rotateX(18deg) rotateZ(-16deg);
   }
-  45% {
+  38% {
+    /* Upward banking ascent */
     opacity: 1;
-    transform: translate3d(160px, -100px, 0) scale(0.95) rotate(18deg) rotateX(28deg) rotateZ(12deg);
+    transform: translate3d(180px, -120px, 80px) scale(0.96) rotate(16deg) rotateX(26deg) rotateZ(14deg);
   }
-  75% {
+  65% {
+    /* High climb across sunset */
     opacity: 0.95;
-    transform: translate3d(520px, -320px, 0) scale(0.6) rotate(34deg) rotateX(42deg) rotateZ(20deg);
+    transform: translate3d(580px, -360px, 120px) scale(0.68) rotate(32deg) rotateX(38deg) rotateZ(22deg);
+  }
+  88% {
+    opacity: 0.65;
+    transform: translate3d(980px, -600px, 160px) scale(0.38) rotate(42deg) rotateX(46deg) rotateZ(28deg);
   }
   100% {
     opacity: 0;
-    transform: translate3d(1020px, -620px, 0) scale(0.1) rotate(45deg) rotateX(52deg) rotateZ(26deg);
+    transform: translate3d(1300px, -780px, 200px) scale(0.08) rotate(48deg) rotateX(54deg) rotateZ(32deg);
   }
 }
 

@@ -20,6 +20,8 @@ export default function SunsetPostboxSection() {
   const [isFolding, setIsFolding] = useState<boolean>(false);
   const [airplaneFlying, setAirplaneFlying] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [originPos, setOriginPos] = useState<{ x: number; y: number } | null>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -34,16 +36,21 @@ export default function SunsetPostboxSection() {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
 
+    if (scrollRef.current) {
+      const rect = scrollRef.current.getBoundingClientRect();
+      setOriginPos({
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      });
+    }
+
     setIsSubmitting(true);
     setErrorMessage(null);
     triggerLeafBurst(window.innerWidth / 2, window.innerHeight / 2, true);
 
-    // Audio cues: Paper rustling followed by breeze wind chime chord
+    // Audio cues: Authentic tactile paper crumple crackles
     if (chimeEngine) {
-      chimeEngine.playPaperRustle();
-      setTimeout(() => {
-        chimeEngine.playBreezeChord();
-      }, 700);
+      chimeEngine.playPaperCrumple();
     }
 
     // Trigger the 3D scroll origami fold and paper airplane launch
@@ -111,9 +118,10 @@ export default function SunsetPostboxSection() {
       id="postbox"
       className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 pt-14 pb-6 relative z-10"
     >
-      <ParchmentScroll maxWidth="max-w-[840px]" sealText="信" isFolding={isFolding}>
+      <div ref={scrollRef} className="w-full flex justify-center">
+        <ParchmentScroll maxWidth="max-w-[840px]" isFolding={isFolding}>
         {/* Section Header Tag */}
-        <div className="flex items-center justify-between mb-3 pr-10">
+        <div className="flex items-center justify-between mb-3">
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider text-[#D0684D] bg-[#D0684D]/15 border border-[#D0684D]/35 flex items-center gap-1.5 shadow-2xs">
             <Mailbox className="w-3.5 h-3.5 text-[#D0684D]" />
             <span>Section 05 • The Sunset Terrace &amp; Postbox</span>
@@ -316,12 +324,14 @@ export default function SunsetPostboxSection() {
           <span>&copy; {new Date().getFullYear()} Kritika Manandhar</span>
           <span>B.Sc. CSIT • Padmakanya Campus • Tribhuvan University</span>
         </div>
-      </ParchmentScroll>
+        </ParchmentScroll>
+      </div>
 
       {/* 3D Origami Scroll Folding & Soaring Paper Airplane Animation */}
       <OrigamiScrollPlane
         isActive={airplaneFlying}
         onFlightComplete={handleFlightComplete}
+        originPos={originPos}
       />
     </section>
   );

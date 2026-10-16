@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
+import { chimeEngine } from "@/components/audio/ChimeEngine";
 
 interface OrigamiScrollPlaneProps {
   isActive: boolean;
@@ -11,7 +12,7 @@ interface OrigamiScrollPlaneProps {
 // Authentic Multi-Faceted Crumpled Parchment Paper Wad
 function CrumpledPaperBall() {
   return (
-    <div className="relative w-36 sm:w-44 h-36 sm:h-44 flex items-center justify-center drop-shadow-[0_18px_30px_rgba(40,16,6,0.48)]">
+    <div className="relative w-36 sm:w-44 h-36 sm:h-44 flex items-center justify-center drop-shadow-[0_20px_32px_rgba(40,16,6,0.52)]">
       <svg
         viewBox="0 0 160 160"
         className="w-full h-full select-none pointer-events-none"
@@ -47,12 +48,12 @@ function CrumpledPaperBall() {
           </linearGradient>
         </defs>
 
-        {/* 1. Base Crumpled Outer Polygon */}
+        {/* 1. Base Crumpled Outer Silhouette */}
         <polygon
           points="80,18 114,24 138,48 135,84 146,114 112,140 76,138 42,144 24,112 16,74 38,36 60,20"
           fill="url(#facetMid)"
           stroke="#5A2E10"
-          strokeWidth="1.5"
+          strokeWidth="1.6"
           strokeLinejoin="round"
         />
 
@@ -64,7 +65,7 @@ function CrumpledPaperBall() {
         <polygon points="102,60 135,84 108,102 82,84" fill="url(#facetDeep)" stroke="#381806" strokeWidth="1" />
         <polygon points="135,84 146,114 108,102" fill="url(#facetShadow)" stroke="#4A260C" strokeWidth="1" />
 
-        {/* 3. Raised Lit Paper Ridges & Peaks (Facing Ambient Sunbeams) */}
+        {/* 3. Raised Lit Paper Ridges & Peaks (Facing Ambient Sunlight) */}
         <polygon points="80,18 114,24 102,60 68,54" fill="url(#facetHighlight)" stroke="#6A3B18" strokeWidth="1.2" />
         <polygon points="68,54 102,60 82,84" fill="url(#facetHighlight)" stroke="#6A3B18" strokeWidth="1.2" />
         <polygon points="56,98 82,84 76,138 42,144" fill="url(#facetMid)" stroke="#5A2E10" strokeWidth="1" />
@@ -73,17 +74,17 @@ function CrumpledPaperBall() {
         <polygon points="16,74 56,98 24,112" fill="url(#facetHighlight)" stroke="#5A2E10" strokeWidth="1" />
 
         {/* 4. Sharp Crumpled Ridge Crease Lines & Highlights */}
-        <line x1="80" y1="18" x2="68" y2="54" stroke="#FFF7E6" strokeWidth="1.4" strokeLinecap="round" />
+        <line x1="80" y1="18" x2="68" y2="54" stroke="#FFF7E6" strokeWidth="1.5" strokeLinecap="round" />
         <line x1="68" y1="54" x2="102" y2="60" stroke="#FFF7E6" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="68" y1="54" x2="82" y2="84" stroke="#4A220A" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="82" y1="84" x2="108" y2="102" stroke="#4A220A" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="102" y1="60" x2="135" y2="84" stroke="#FFF7E6" strokeWidth="1.4" strokeLinecap="round" />
-        <line x1="56" y1="98" x2="82" y2="84" stroke="#FFF7E6" strokeWidth="1.4" strokeLinecap="round" />
-        <line x1="76" y1="138" x2="82" y2="84" stroke="#3A1A06" strokeWidth="1.6" strokeLinecap="round" />
+        <line x1="68" y1="54" x2="82" y2="84" stroke="#4A220A" strokeWidth="2" strokeLinecap="round" />
+        <line x1="82" y1="84" x2="108" y2="102" stroke="#4A220A" strokeWidth="2" strokeLinecap="round" />
+        <line x1="102" y1="60" x2="135" y2="84" stroke="#FFF7E6" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="56" y1="98" x2="82" y2="84" stroke="#FFF7E6" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="76" y1="138" x2="82" y2="84" stroke="#3A1A06" strokeWidth="1.8" strokeLinecap="round" />
 
-        {/* 5. Vermilion Hanko Stamp Peeking from the Crumpled Crease */}
-        <g transform="translate(76, 50) rotate(-24) scale(0.65)">
-          <rect x="0" y="0" width="22" height="22" rx="2" fill="rgba(184, 56, 40, 0.2)" stroke="#B83828" strokeWidth="1.8" />
+        {/* 5. Vermilion Hanko Stamp Peeking from the Crumpled Fold */}
+        <g transform="translate(76, 50) rotate(-24) scale(0.68)">
+          <rect x="0" y="0" width="22" height="22" rx="2" fill="rgba(184, 56, 40, 0.22)" stroke="#B83828" strokeWidth="1.8" />
           <text x="11" y="16" fontFamily="serif" fontWeight="bold" fontSize="12" fill="#B83828" textAnchor="middle">
             信
           </text>
@@ -93,10 +94,15 @@ function CrumpledPaperBall() {
   );
 }
 
-// Pristine 3D Origami Paper Airplane
-function OrigamiPaperPlane() {
+// Pristine 3D Origami Paper Airplane with 3D Wing Unfold Mechanics
+function OrigamiPaperPlane({ isUnfolding }: { isUnfolding: boolean }) {
   return (
-    <div className="relative w-44 sm:w-56 h-36 sm:h-44 drop-shadow-[0_16px_34px_rgba(40,18,6,0.4)]">
+    <div
+      className="relative w-48 sm:w-60 h-38 sm:h-48 drop-shadow-[0_20px_36px_rgba(40,18,6,0.42)]"
+      style={{
+        transformStyle: "preserve-3d",
+      }}
+    >
       <svg
         viewBox="0 0 240 180"
         className="w-full h-full select-none pointer-events-none"
@@ -147,25 +153,82 @@ function OrigamiPaperPlane() {
           strokeLinejoin="round"
         />
 
-        {/* 2. Left Wing (Sunlit Face) */}
-        <polygon
-          points="120,16 22,162 96,142"
-          fill="url(#leftWingGrad)"
-          stroke="#9E6F3E"
-          strokeWidth="1.2"
-          strokeLinejoin="round"
-        />
+        {/* 2. Left Wing (Sunlit Face with 3D Unfolding) */}
+        <g
+          style={
+            isUnfolding
+              ? {
+                  transformOrigin: "120px 80px",
+                  animation: "wing-unfold-left 0.55s cubic-bezier(0.34, 1.3, 0.64, 1) forwards",
+                }
+              : undefined
+          }
+        >
+          <polygon
+            points="120,16 22,162 96,142"
+            fill="url(#leftWingGrad)"
+            stroke="#9E6F3E"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+        </g>
 
-        {/* 3. Right Wing (Angled Shaded Face) */}
-        <polygon
-          points="120,16 144,142 218,162"
-          fill="url(#rightWingGrad)"
-          stroke="#8B5C2B"
-          strokeWidth="1.2"
-          strokeLinejoin="round"
-        />
+        {/* 3. Right Wing (Angled Face with 3D Unfolding) */}
+        <g
+          style={
+            isUnfolding
+              ? {
+                  transformOrigin: "120px 80px",
+                  animation: "wing-unfold-right 0.55s cubic-bezier(0.34, 1.3, 0.64, 1) forwards",
+                }
+              : undefined
+          }
+        >
+          <polygon
+            points="120,16 144,142 218,162"
+            fill="url(#rightWingGrad)"
+            stroke="#8B5C2B"
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
 
-        {/* 4. Center Fold Spine Highlight Crease */}
+          {/* 4. Vermilion Artist Hanko Stamp Stamped onto the Wing */}
+          <g
+            transform="translate(152, 112) rotate(14)"
+            style={
+              isUnfolding
+                ? {
+                    transformOrigin: "163px 123px",
+                    animation: "stamp-press 0.4s 0.3s cubic-bezier(0.34, 1.5, 0.64, 1) both",
+                  }
+                : undefined
+            }
+          >
+            <rect
+              x="0"
+              y="0"
+              width="22"
+              height="22"
+              rx="2"
+              fill="rgba(184, 56, 40, 0.16)"
+              stroke="#B83828"
+              strokeWidth="1.6"
+            />
+            <text
+              x="11"
+              y="16"
+              fontFamily="serif"
+              fontWeight="bold"
+              fontSize="12"
+              fill="#B83828"
+              textAnchor="middle"
+            >
+              信
+            </text>
+          </g>
+        </g>
+
+        {/* 5. Center Fold Spine Highlight Crease */}
         <line
           x1="120"
           y1="16"
@@ -176,34 +239,9 @@ function OrigamiPaperPlane() {
           strokeLinecap="round"
         />
 
-        {/* 5. Wing Fold Crease Accents */}
+        {/* 6. Wing Fold Crease Accents */}
         <line x1="120" y1="16" x2="96" y2="142" stroke="#8F6432" strokeWidth="1.2" />
         <line x1="120" y1="16" x2="144" y2="142" stroke="#76491E" strokeWidth="1.2" />
-
-        {/* 6. Authentic Vermilion Artist Hanko Stamp on Wing */}
-        <g transform="translate(152, 112) rotate(14)">
-          <rect
-            x="0"
-            y="0"
-            width="22"
-            height="22"
-            rx="2"
-            fill="rgba(184, 56, 40, 0.16)"
-            stroke="#B83828"
-            strokeWidth="1.6"
-          />
-          <text
-            x="11"
-            y="16"
-            fontFamily="serif"
-            fontWeight="bold"
-            fontSize="12"
-            fill="#B83828"
-            textAnchor="middle"
-          >
-            信
-          </text>
-        </g>
       </svg>
     </div>
   );
@@ -213,7 +251,7 @@ export default function OrigamiScrollPlane({
   isActive,
   onFlightComplete,
 }: OrigamiScrollPlaneProps) {
-  const [phase, setPhase] = useState<"idle" | "crumpling" | "morphing" | "launching" | "gone">("idle");
+  const [phase, setPhase] = useState<"idle" | "crumpling" | "unfolding" | "launching" | "gone">("idle");
 
   useEffect(() => {
     if (!isActive) {
@@ -221,28 +259,37 @@ export default function OrigamiScrollPlane({
       return;
     }
 
-    // Step 1: Crumple phase (0ms - 550ms)
+    // Step 1: Crumple Phase (0ms - 550ms)
+    // The paper sheet wrinkles, folds in, and crunches into the crumpled ball
     setPhase("crumpling");
 
-    // Step 2: Unfold & morph from crumpled ball into crisp origami plane (550ms - 1050ms)
-    const morphTimer = setTimeout(() => {
-      setPhase("morphing");
+    // Step 2: Unfold & Morph Phase (550ms - 1150ms)
+    // The crumpled ball pops open, wings unfold in 3D, and Hanko seal stamps
+    const unfoldTimer = setTimeout(() => {
+      setPhase("unfolding");
       triggerLeafBurst(window.innerWidth / 2, window.innerHeight / 2, false);
+      if (chimeEngine) {
+        chimeEngine.playChime(3);
+      }
     }, 550);
 
-    // Step 3: Launch paper plane soaring across the sunset sky (1050ms - 2650ms)
+    // Step 3: Launch & Soar Phase (1150ms - 2750ms)
+    // The paper plane takes flight across the sunset sky
     const launchTimer = setTimeout(() => {
       setPhase("launching");
-    }, 1050);
+      if (chimeEngine) {
+        chimeEngine.playBreezeChord();
+      }
+    }, 1150);
 
-    // Step 4: Flight completed, reveal confirmation card
+    // Step 4: Complete Flight (2750ms+)
     const completeTimer = setTimeout(() => {
       setPhase("gone");
       onFlightComplete();
-    }, 2650);
+    }, 2750);
 
     return () => {
-      clearTimeout(morphTimer);
+      clearTimeout(unfoldTimer);
       clearTimeout(launchTimer);
       clearTimeout(completeTimer);
     };
@@ -252,40 +299,40 @@ export default function OrigamiScrollPlane({
 
   return (
     <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden flex items-center justify-center">
-      {/* 1. Backdrop Sky Glow during takeoff */}
+      {/* 1. Backdrop Sunset Sky Glow during flight */}
       <div
-        className={`absolute inset-0 bg-gradient-to-t from-[#D0684D]/10 via-[#F4ACB7]/06 to-transparent transition-opacity duration-1000 ${
+        className={`absolute inset-0 bg-gradient-to-t from-[#D0684D]/12 via-[#F4ACB7]/08 to-transparent transition-opacity duration-1000 ${
           phase === "launching" ? "opacity-100" : "opacity-0"
         }`}
       />
 
-      {/* 2. PHASE 1: THE CRUMPLED PAPER BALL (0ms - 550ms) */}
+      {/* 2. PHASE 1: TACTILE CRUMPLED PAPER BALL (0ms - 550ms) */}
       {phase === "crumpling" && (
         <div
           className="relative flex items-center justify-center"
           style={{
-            animation: "crumple-crunch 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) forwards",
+            animation: "crumple-squeeze 0.55s cubic-bezier(0.34, 1.3, 0.64, 1) forwards",
           }}
         >
           <CrumpledPaperBall />
         </div>
       )}
 
-      {/* 3. PHASE 2 & 3: THE ORIGAMI PLANE UNFOLDING & LAUNCHING (550ms+) */}
-      {(phase === "morphing" || phase === "launching") && (
+      {/* 3. PHASE 2 & 3: ORIGAMI PLANE UNFOLDING & LAUNCHING (550ms+) */}
+      {(phase === "unfolding" || phase === "launching") && (
         <div
           className="relative flex items-center justify-center"
           style={{
             transformStyle: "preserve-3d",
             animation:
-              phase === "morphing"
-                ? "plane-unfold 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) forwards"
+              phase === "unfolding"
+                ? "none"
                 : "airplane-soar 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards",
           }}
         >
-          {/* Trailing Wind Vapor / Breeze Swirl Ribbons */}
+          {/* Trailing Wind Breeze Ribbons & Floating Petals */}
           {phase === "launching" && (
-            <div className="absolute -left-36 top-1/2 -translate-y-1/2 w-48 h-12 pointer-events-none opacity-75">
+            <div className="absolute -left-36 top-1/2 -translate-y-1/2 w-48 h-12 pointer-events-none opacity-80">
               <svg viewBox="0 0 180 50" className="w-full h-full" fill="none">
                 <path
                   d="M 10 25 C 50 15, 90 35, 140 22 C 160 18, 175 25, 180 25"
@@ -302,7 +349,6 @@ export default function OrigamiScrollPlane({
                   strokeDasharray="4 4"
                   strokeLinecap="round"
                 />
-                {/* Drifting Petals in the wake */}
                 <circle cx="45" cy="20" r="2.5" fill="#F4ACB7" opacity="0.85" />
                 <circle cx="85" cy="38" r="3" fill="#D0684D" opacity="0.75" />
                 <circle cx="120" cy="18" r="2" fill="#E4BA68" opacity="0.9" />
@@ -310,8 +356,8 @@ export default function OrigamiScrollPlane({
             </div>
           )}
 
-          {/* Master Origami Paper Plane */}
-          <OrigamiPaperPlane />
+          {/* Master 3D Origami Paper Plane with Unfolding Wings */}
+          <OrigamiPaperPlane isUnfolding={phase === "unfolding"} />
         </div>
       )}
     </div>

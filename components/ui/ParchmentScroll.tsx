@@ -130,22 +130,14 @@ export default function ParchmentScroll({
 }: ParchmentScrollProps) {
   return (
     <div
-      style={
-        isFolding
-          ? {
-              animation: "scroll-crumple 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards",
-              pointerEvents: "none",
-            }
-          : undefined
-      }
-      className={`relative w-full ${maxWidth} mx-auto my-3 sm:my-5 transition-all duration-500 ease-in-out ${
+      className={`relative w-full ${maxWidth} mx-auto my-3 sm:my-5 ${
         isFolding ? "pointer-events-none" : "scale-100 rotate-0 opacity-100"
       } ${className}`}
     >
       {/* 1. BRAIDED SILK HANGING CORD (Artisanal Hanging Loop) */}
       <div
-        className={`flex justify-center -mb-2 sm:-mb-3 pointer-events-none select-none relative z-30 transition-all duration-300 ${
-          isFolding ? "opacity-0 -translate-y-4" : "opacity-100 translate-y-0"
+        className={`flex justify-center -mb-2 sm:-mb-3 pointer-events-none select-none relative z-30 transition-all duration-300 ease-out ${
+          isFolding ? "opacity-0 -translate-y-8" : "opacity-100 translate-y-0"
         }`}
       >
         <svg
@@ -168,12 +160,12 @@ export default function ParchmentScroll({
         </svg>
       </div>
 
-      {/* 2. TOP WOODEN SCROLL ROLLER (Rolled Paper Cylinder & Lathe-Turned Finials) */}
+      {/* 2. TOP WOODEN SCROLL ROLLER (Detaches and rolls away during crumple) */}
       <div
-        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_5px_12px_rgba(40,18,8,0.32)] transition-all duration-500 ease-in ${
+        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_5px_12px_rgba(40,18,8,0.32)] transition-all duration-500 ease-out ${
           isFolding
-            ? "translate-y-20 scale-y-50 scale-x-75 opacity-0"
-            : "translate-y-0 scale-100 opacity-100"
+            ? "-translate-y-36 rotate-[-18deg] opacity-0 scale-95 pointer-events-none"
+            : "translate-y-0 rotate-0 opacity-100 scale-100"
         }`}
       >
         <ScrollFinialLeft />
@@ -205,13 +197,16 @@ export default function ParchmentScroll({
         <ScrollFinialRight />
       </div>
 
-      {/* 3. THE UNROLLED PARCHMENT SHEET (Authentic Rice Paper Watercolor Texture) */}
+      {/* 3. THE UNROLLED PARCHMENT SHEET (Buckles and crumples into the paper wad) */}
       <div
-        className={`relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm overflow-hidden bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 border-[#C2986E]/75 transition-all duration-600 ease-in-out ${
+        style={
           isFolding
-            ? "transform perspective-[900px] rotate-y-60 scale-x-40 scale-y-30 opacity-10"
-            : "transform-none opacity-100"
-        }`}
+            ? {
+                animation: "sheet-crumple 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards",
+              }
+            : undefined
+        }
+        className="relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm overflow-hidden bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 border-[#C2986E]/75"
       >
         {/* Multi-Tone Watercolor Rice-Paper Wash */}
         <div
@@ -230,32 +225,54 @@ export default function ParchmentScroll({
         <div className="absolute top-0 inset-x-0 h-6 bg-gradient-to-b from-[#4A240C]/28 via-[#4A240C]/08 to-transparent pointer-events-none z-10" />
         <div className="absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-[#4A240C]/28 via-[#4A240C]/08 to-transparent pointer-events-none z-10" />
 
-        {/* Dynamic Crumple Paper Wrinkles Overlay (Flashes during crumpling) */}
+        {/* Dynamic Crumple Paper Wrinkles & Crease Shading Overlay */}
         {isFolding && (
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none z-20"
-            viewBox="0 0 400 400"
+            viewBox="0 0 500 500"
             preserveAspectRatio="none"
             fill="none"
           >
+            {/* Shaded Valley Facets */}
+            <polygon points="0,0 260,240 110,490 0,500" fill="rgba(55,24,6,0.22)" />
+            <polygon points="500,0 240,260 410,500 500,500" fill="rgba(65,30,8,0.25)" />
+            <polygon points="120,0 250,250 380,0" fill="rgba(40,16,4,0.18)" />
+            <polygon points="250,250 140,500 360,500" fill="rgba(40,16,4,0.2)" />
+
+            {/* Deep Crease Valleys */}
             <path
-              d="M 10 30 L 160 170 L 60 340 M 390 20 L 230 180 L 330 370 M 30 210 L 370 190 M 180 10 L 220 390 M 90 70 L 310 330"
-              stroke="#5A2E10"
-              strokeWidth="2.5"
-              strokeDasharray="6 3"
-              opacity="0.8"
+              d="M 15 25 L 245 255 L 75 485 M 485 15 L 255 245 L 425 485 M 35 250 L 465 245 M 245 15 L 255 485 M 115 65 L 385 435 M 385 65 L 115 435"
+              stroke="#3A1705"
+              strokeWidth="3.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity="0.9"
             />
+            {/* Secondary Crease Lines */}
             <path
-              d="M 30 110 L 210 200 L 110 290 M 370 130 L 180 220 L 270 350"
-              stroke="#FFF8E7"
-              strokeWidth="1.8"
-              opacity="0.7"
+              d="M 45 125 L 250 250 L 135 375 M 455 125 L 250 250 L 365 375"
+              stroke="#7A3D14"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              opacity="0.85"
+            />
+            {/* Crisp Peak Highlight Ridges */}
+            <path
+              d="M 18 22 L 242 252 L 78 482 M 482 18 L 252 242 M 35 247 L 465 242 M 118 62 L 382 432"
+              stroke="#FFFDF6"
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity="0.95"
             />
           </svg>
         )}
 
         {/* Inner Content Area */}
-        <div className="relative z-10 px-5 sm:px-8 md:px-10 py-5 sm:py-7">
+        <div
+          className={`relative z-10 px-5 sm:px-8 md:px-10 py-5 sm:py-7 transition-all duration-300 ${
+            isFolding ? "filter blur-[1.5px] opacity-40 scale-95" : ""
+          }`}
+        >
           {/* Authentic Hand-Pressed Vermilion Artist Hanko Stamp */}
           {sealText && (
             <div
@@ -273,12 +290,12 @@ export default function ParchmentScroll({
         </div>
       </div>
 
-      {/* 4. BOTTOM WOODEN SCROLL ROLLER */}
+      {/* 4. BOTTOM WOODEN SCROLL ROLLER (Detaches and drops away during crumple) */}
       <div
-        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_8px_18px_rgba(40,18,8,0.38)] transition-all duration-500 ease-in ${
+        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_8px_18px_rgba(40,18,8,0.38)] transition-all duration-500 ease-out ${
           isFolding
-            ? "-translate-y-20 scale-y-50 scale-x-75 opacity-0"
-            : "translate-y-0 scale-100 opacity-100"
+            ? "translate-y-36 rotate-[18deg] opacity-0 scale-95 pointer-events-none"
+            : "translate-y-0 rotate-0 opacity-100 scale-100"
         }`}
       >
         <ScrollFinialLeft />

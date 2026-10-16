@@ -15,13 +15,57 @@ export default function Home() {
   const [currentFrame, setCurrentFrame] = useState<number>(1);
   const totalFrames = 150;
 
-  // Track vertical scroll progress across the 500vh container
+  // Track vertical scroll progress mapped across all 5 story sections
   const onScroll = useCallback(() => {
-    const totalScroll =
-      document.documentElement.scrollHeight - window.innerHeight;
-    if (totalScroll > 0) {
-      const progress = Math.min(1, Math.max(0, window.scrollY / totalScroll));
-      setScrollProgress(progress);
+    const s1 = document.getElementById("study");
+    const s2 = document.getElementById("skills");
+    const s3 = document.getElementById("projects");
+    const s4 = document.getElementById("greenhouse");
+    const s5 = document.getElementById("postbox");
+
+    if (s1 && s2 && s3 && s4 && s5) {
+      const scrollY = window.scrollY;
+      const t1 = s1.offsetTop;
+      const t2 = s2.offsetTop;
+      const t3 = s3.offsetTop;
+      const t4 = s4.offsetTop;
+      const t5 = s5.offsetTop;
+      const maxScroll = Math.max(
+        1,
+        document.documentElement.scrollHeight - window.innerHeight
+      );
+
+      let progress = 0;
+      if (scrollY < t2) {
+        // Section 1 (Study): 0.00 -> 0.25
+        const span = Math.max(1, t2 - t1);
+        progress = (scrollY / span) * 0.25;
+      } else if (scrollY < t3) {
+        // Section 2 (Botanist Shelf carousel): 0.25 -> 0.50
+        const span = Math.max(1, t3 - t2);
+        progress = 0.25 + ((scrollY - t2) / span) * 0.25;
+      } else if (scrollY < t4) {
+        // Section 3 (Field Journal): 0.50 -> 0.75
+        const span = Math.max(1, t4 - t3);
+        progress = 0.50 + ((scrollY - t3) / span) * 0.25;
+      } else if (scrollY < t5) {
+        // Section 4 (Greenhouse): 0.75 -> 0.90
+        const span = Math.max(1, t5 - t4);
+        progress = 0.75 + ((scrollY - t4) / span) * 0.15;
+      } else {
+        // Section 5 (Sunset Postbox): 0.90 -> 1.00
+        const span = Math.max(1, maxScroll - t5);
+        progress = 0.90 + Math.min(1, Math.max(0, (scrollY - t5) / span)) * 0.1;
+      }
+
+      setScrollProgress(Math.min(1, Math.max(0, progress)));
+    } else {
+      const totalScroll =
+        document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        const progress = Math.min(1, Math.max(0, window.scrollY / totalScroll));
+        setScrollProgress(progress);
+      }
     }
   }, []);
 
@@ -39,7 +83,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative min-h-[500vh] w-full overflow-x-clip bg-[#FAF6F0] selection:bg-[#F4ACB7]/50 selection:text-[#3D352E]">
+    <main className="relative min-h-[1000vh] w-full overflow-x-clip bg-[#FAF6F0] selection:bg-[#F4ACB7]/50 selection:text-[#3D352E]">
       {/* 1. Global Interactive Click Particle Burst Engine */}
       <LeafParticleBurst />
 

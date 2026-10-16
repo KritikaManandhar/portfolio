@@ -150,6 +150,57 @@ class ChimeAudioManager {
 
     noise.start(now);
   }
+
+  // Authentic tactile multi-burst paper crumple sound effect
+  public playPaperCrumple(): void {
+    if (this.isMuted) return;
+    const ctx = this.initCtx();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    // 1. Low frequency resonant body thump/scrunch (paper mass compressing)
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(200, now);
+    osc.frequency.exponentialRampToValueAtTime(50, now + 0.65);
+    oscGain.gain.setValueAtTime(0.07, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.7);
+
+    // 2. Multi-burst crinkle & fiber snap crackles (creases folding and grinding)
+    const bursts = 8;
+    for (let b = 0; b < bursts; b++) {
+      const burstStart = now + b * 0.075 + (Math.random() * 0.035);
+      const bufferSize = Math.floor(ctx.sampleRate * 0.075);
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = "bandpass";
+      filter.frequency.setValueAtTime(1400 + Math.random() * 2000, burstStart);
+      filter.Q.setValueAtTime(3.0, burstStart);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.06 + Math.random() * 0.04, burstStart);
+      gain.gain.exponentialRampToValueAtTime(0.0001, burstStart + 0.07);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      noise.start(burstStart);
+      noise.stop(burstStart + 0.075);
+    }
+  }
 }
 
 export const chimeEngine = typeof window !== "undefined" ? new ChimeAudioManager() : (null as unknown as ChimeAudioManager);
