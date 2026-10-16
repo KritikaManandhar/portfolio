@@ -7,10 +7,10 @@ import {
   X,
   BookOpen,
   Palette,
-  GraduationCap,
   Mail,
   Send,
   Feather,
+  Flower2,
 } from "lucide-react";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
@@ -59,10 +59,10 @@ const NAV_ITEMS: NavItem[] = [
   {
     id: "greenhouse",
     chapter: "04",
-    label: "Greenhouse",
-    shortLabel: "Logbook",
-    description: "Education & Guild",
-    icon: <GraduationCap className="w-3.5 h-3.5" />,
+    label: "Flower Studio",
+    shortLabel: "Studio",
+    description: "Pressed Bookmark Craft",
+    icon: <Flower2 className="w-3.5 h-3.5" />,
   },
   {
     id: "postbox",

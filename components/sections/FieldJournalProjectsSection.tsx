@@ -21,7 +21,6 @@ import ParchmentScroll from "@/components/ui/ParchmentScroll";
 interface ProjectDetails {
   id: string;
   chapterNumber: string;
-  sealText: string;
   badgeLabel: string;
   shortTitle: string;
   title: string;
@@ -39,7 +38,6 @@ const PROJECTS: ProjectDetails[] = [
   {
     id: "ecommerce",
     chapterNumber: "01",
-    sealText: "商",
     badgeLabel: "Manuscript Folio 01 • Retail Architecture",
     shortTitle: "E-Commerce",
     title: "E-Commerce Website & Inventory Platform",
@@ -62,7 +60,6 @@ const PROJECTS: ProjectDetails[] = [
   {
     id: "auth-system",
     chapterNumber: "02",
-    sealText: "鍵",
     badgeLabel: "Manuscript Folio 02 • Security & Student Portal",
     shortTitle: "Student Portal",
     title: "Student Registration & Login System",
@@ -216,7 +213,7 @@ export default function FieldJournalProjectsSection() {
                   }`}
                 >
                   <span className="text-[10px] font-mono opacity-80">
-                    {proj.sealText}
+                    {proj.chapterNumber}
                   </span>
                   <span>{proj.shortTitle}</span>
                 </button>
@@ -269,7 +266,7 @@ export default function FieldJournalProjectsSection() {
                     : "opacity-0 translate-x-[115%] scale-95 absolute inset-0 z-10 pointer-events-none"
                 }`}
               >
-                <ParchmentScroll maxWidth="max-w-[760px]" sealText={proj.sealText}>
+                <ParchmentScroll maxWidth="max-w-[760px]">
                   {/* Scroll Header */}
                   <div className="flex items-center justify-between gap-2 mb-2 pr-10">
                     <span

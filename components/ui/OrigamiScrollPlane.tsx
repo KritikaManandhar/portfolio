@@ -7,6 +7,7 @@ import { chimeEngine } from "@/components/audio/ChimeEngine";
 interface OrigamiScrollPlaneProps {
   isActive: boolean;
   onFlightComplete: () => void;
+  originPos?: { x: number; y: number } | null;
 }
 
 // Authentic Multi-Faceted Crumpled Parchment Paper Wad
@@ -82,12 +83,10 @@ function CrumpledPaperBall() {
         <line x1="56" y1="98" x2="82" y2="84" stroke="#FFF7E6" strokeWidth="1.5" strokeLinecap="round" />
         <line x1="76" y1="138" x2="82" y2="84" stroke="#3A1A06" strokeWidth="1.8" strokeLinecap="round" />
 
-        {/* 5. Vermilion Hanko Stamp Peeking from the Crumpled Fold */}
+        {/* 5. Vermilion Wax Seal Peeking from the Crumpled Fold */}
         <g transform="translate(76, 50) rotate(-24) scale(0.68)">
-          <rect x="0" y="0" width="22" height="22" rx="2" fill="rgba(184, 56, 40, 0.22)" stroke="#B83828" strokeWidth="1.8" />
-          <text x="11" y="16" fontFamily="serif" fontWeight="bold" fontSize="12" fill="#B83828" textAnchor="middle">
-            信
-          </text>
+          <circle cx="11" cy="11" r="10" fill="rgba(184, 56, 40, 0.22)" stroke="#B83828" strokeWidth="1.8" />
+          <path d="M 6 11 Q 11 6 16 11 Q 11 16 6 11" fill="none" stroke="#B83828" strokeWidth="1.2" />
         </g>
       </svg>
     </div>
@@ -192,7 +191,7 @@ function OrigamiPaperPlane({ isUnfolding }: { isUnfolding: boolean }) {
             strokeLinejoin="round"
           />
 
-          {/* 4. Vermilion Artist Hanko Stamp Stamped onto the Wing */}
+          {/* 4. Vermilion Artist Wax Seal Stamped onto the Wing */}
           <g
             transform="translate(152, 112) rotate(14)"
             style={
@@ -204,27 +203,20 @@ function OrigamiPaperPlane({ isUnfolding }: { isUnfolding: boolean }) {
                 : undefined
             }
           >
-            <rect
-              x="0"
-              y="0"
-              width="22"
-              height="22"
-              rx="2"
+            <circle
+              cx="11"
+              cy="11"
+              r="10"
               fill="rgba(184, 56, 40, 0.16)"
               stroke="#B83828"
               strokeWidth="1.6"
             />
-            <text
-              x="11"
-              y="16"
-              fontFamily="serif"
-              fontWeight="bold"
-              fontSize="12"
-              fill="#B83828"
-              textAnchor="middle"
-            >
-              信
-            </text>
+            <path
+              d="M 6 11 Q 11 6 16 11 Q 11 16 6 11"
+              fill="none"
+              stroke="#B83828"
+              strokeWidth="1.2"
+            />
           </g>
         </g>
 
@@ -255,16 +247,20 @@ export default function OrigamiScrollPlane({
 
   useEffect(() => {
     if (!isActive) {
-      setPhase("idle");
-      return;
+      const resetTimer = setTimeout(() => {
+        setPhase("idle");
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
 
     // Step 1: Crumple Phase (0ms - 550ms)
     // The paper sheet wrinkles, folds in, and crunches into the crumpled ball
-    setPhase("crumpling");
+    const crumpleTimer = setTimeout(() => {
+      setPhase("crumpling");
+    }, 0);
 
     // Step 2: Unfold & Morph Phase (550ms - 1150ms)
-    // The crumpled ball pops open, wings unfold in 3D, and Hanko seal stamps
+    // The crumpled ball pops open, wings unfold in 3D, and wax seal stamps
     const unfoldTimer = setTimeout(() => {
       setPhase("unfolding");
       triggerLeafBurst(window.innerWidth / 2, window.innerHeight / 2, false);
@@ -289,6 +285,7 @@ export default function OrigamiScrollPlane({
     }, 2750);
 
     return () => {
+      clearTimeout(crumpleTimer);
       clearTimeout(unfoldTimer);
       clearTimeout(launchTimer);
       clearTimeout(completeTimer);

@@ -4,7 +4,6 @@ interface ParchmentScrollProps {
   children: React.ReactNode;
   maxWidth?: string; // e.g. "max-w-2xl", "max-w-[760px]"
   className?: string;
-  sealText?: string;
   isFolding?: boolean; // When true, folds the scroll inward into the origami plane
 }
 
@@ -125,7 +124,6 @@ export default function ParchmentScroll({
   children,
   maxWidth = "max-w-[760px]",
   className = "",
-  sealText = "吉",
   isFolding = false,
 }: ParchmentScrollProps) {
   return (
@@ -273,18 +271,6 @@ export default function ParchmentScroll({
             isFolding ? "filter blur-[1.5px] opacity-40 scale-95" : ""
           }`}
         >
-          {/* Authentic Hand-Pressed Vermilion Artist Hanko Stamp */}
-          {sealText && (
-            <div
-              className="absolute top-3 right-4 sm:top-4 sm:right-6 w-7 h-7 sm:w-8 sm:h-8 rounded-xs border-2 border-[#B83828] bg-[#B83828]/12 flex items-center justify-center text-[#B83828] select-none pointer-events-none shadow-2xs transform rotate-2 z-20"
-              title="Studio Hanko Stamp"
-            >
-              <span className="text-xs sm:text-sm font-serif font-bold leading-none select-none">
-                {sealText}
-              </span>
-            </div>
-          )}
-
           {/* Actual Section Content */}
           <div className="relative z-10 text-[#3D2E24]">{children}</div>
         </div>
