@@ -1,26 +1,122 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FAF6F0;
+  --foreground: #3D352E;
+  --ghibli-cream: #FAF6F0;
+  --ghibli-linen: #F3ECE1;
+  --ghibli-sage: #7A9A7E;
+  --ghibli-terracotta: #E07A5F;
+  --ghibli-pink: #F4ACB7;
+  --ghibli-espresso: #3D352E;
+  --ghibli-gold: #F3C68F;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--ghibli-cream);
+  color: var(--ghibli-espresso);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Studio Ghibli Organic Card Styles */
+.ghibli-card {
+  background-color: rgba(243, 236, 225, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(122, 154, 126, 0.28);
+  border-radius: 28px 18px 32px 20px;
+  box-shadow: 
+    0 12px 36px -8px rgba(61, 53, 46, 0.12),
+    0 4px 12px -2px rgba(61, 53, 46, 0.06),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ghibli-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 16px 44px -10px rgba(61, 53, 46, 0.16),
+    0 6px 16px -3px rgba(61, 53, 46, 0.08);
+}
+
+/* Washi Tape Corner Accents */
+.washi-tape {
+  position: absolute;
+  height: 22px;
+  background-color: rgba(244, 212, 172, 0.78);
+  border-left: 2px dashed rgba(224, 122, 95, 0.4);
+  border-right: 2px dashed rgba(224, 122, 95, 0.4);
+  box-shadow: 0 2px 6px rgba(61, 53, 46, 0.08);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.washi-tape-top-left {
+  top: -10px;
+  left: 24px;
+  width: 72px;
+  transform: rotate(-3.5deg);
+}
+
+.washi-tape-top-right {
+  top: -10px;
+  right: 28px;
+  width: 68px;
+  transform: rotate(3deg);
+}
+
+/* Botanical Stamp */
+.botanical-stamp {
+  border: 2px dashed rgba(122, 154, 126, 0.5);
+  border-radius: 8px;
+  background-color: rgba(122, 154, 126, 0.12);
+}
+
+/* Floating animation for subtle cozy elements */
+@keyframes ghibli-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+
+.animate-ghibli-float {
+  animation: ghibli-float 4s ease-in-out infinite;
+}
+
+@keyframes steam-drift {
+  0% {
+    opacity: 0.1;
+    transform: translateY(0) scaleX(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-10px) scaleX(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-22px) scaleX(1.3);
+  }
+}
+
+.animate-steam {
+  animation: steam-drift 2.5s ease-out infinite;
+}
+
+/* Custom Paper Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF6F0;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8C7B0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C2AF94;
 }
