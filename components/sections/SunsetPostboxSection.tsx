@@ -6,6 +6,7 @@ import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
 import { PaperPlaneVector } from "@/components/ui/VectorIcons";
 import ParchmentScroll from "@/components/ui/ParchmentScroll";
+import OrigamiScrollPlane from "@/components/ui/OrigamiScrollPlane";
 
 export default function SunsetPostboxSection() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function SunsetPostboxSection() {
   });
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSent, setIsSent] = useState<boolean>(false);
+  const [isFolding, setIsFolding] = useState<boolean>(false);
   const [airplaneFlying, setAirplaneFlying] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -36,10 +38,16 @@ export default function SunsetPostboxSection() {
     setErrorMessage(null);
     triggerLeafBurst(window.innerWidth / 2, window.innerHeight / 2, true);
 
+    // Audio cues: Paper rustling followed by breeze wind chime chord
     if (chimeEngine) {
       chimeEngine.playPaperRustle();
+      setTimeout(() => {
+        chimeEngine.playBreezeChord();
+      }, 700);
     }
 
+    // Trigger the 3D scroll origami fold and paper airplane launch
+    setIsFolding(true);
     setAirplaneFlying(true);
 
     try {
@@ -61,32 +69,39 @@ export default function SunsetPostboxSection() {
 
       const data = await response.json();
 
-      if (data.success) {
-        setTimeout(() => {
-          setIsSubmitting(false);
-          setIsSent(true);
-          setAirplaneFlying(false);
-
-          if (chimeEngine) {
-            chimeEngine.playCelebration();
-          }
-          triggerLeafBurst(window.innerWidth / 2, window.innerHeight * 0.4, false);
-        }, 1200);
-      } else {
-        setIsSubmitting(false);
+      if (!data.success) {
+        // If API explicitly fails, halt flight and show error
+        setIsFolding(false);
         setAirplaneFlying(false);
+        setIsSubmitting(false);
         setErrorMessage(data.message || "Failed to send letter. Please try again.");
       }
     } catch {
-      setIsSubmitting(false);
+      setIsFolding(false);
       setAirplaneFlying(false);
+      setIsSubmitting(false);
       setErrorMessage("Network error. Please check your connection or email directly.");
     }
+  };
+
+  // Called when the paper airplane finishes soaring into the sunset clouds
+  const handleFlightComplete = () => {
+    setIsFolding(false);
+    setAirplaneFlying(false);
+    setIsSubmitting(false);
+    setIsSent(true);
+
+    if (chimeEngine) {
+      chimeEngine.playCelebration();
+    }
+    triggerLeafBurst(window.innerWidth / 2, window.innerHeight * 0.4, false);
   };
 
   const resetForm = (e: React.MouseEvent) => {
     triggerLeafBurst(e.clientX, e.clientY, true);
     setIsSent(false);
+    setIsFolding(false);
+    setAirplaneFlying(false);
     setErrorMessage(null);
     setFormData({ name: "", email: "", subject: "", message: "" });
   };
@@ -96,7 +111,7 @@ export default function SunsetPostboxSection() {
       id="postbox"
       className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 pt-14 pb-6 relative z-10"
     >
-      <ParchmentScroll maxWidth="max-w-[840px]" sealText="信">
+      <ParchmentScroll maxWidth="max-w-[840px]" sealText="信" isFolding={isFolding}>
         {/* Section Header Tag */}
         <div className="flex items-center justify-between mb-3 pr-10">
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider text-[#D0684D] bg-[#D0684D]/15 border border-[#D0684D]/35 flex items-center gap-1.5 shadow-2xs">
@@ -276,11 +291,19 @@ export default function SunsetPostboxSection() {
                 <div className="pt-1">
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || airplaneFlying}
                     className="w-full py-2.5 rounded-md bg-[#D0684D] hover:bg-[#B9553C] active:scale-[0.99] text-[#FFFDF9] text-xs font-serif font-semibold transition-all shadow-xs border border-[#9A422D] flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
-                    <span>{isSubmitting ? "Folding & Delivering Paper Plane..." : "Fold & Launch Paper Airplane"}</span>
-                    <PaperPlaneVector className="w-3.5 h-3.5 text-white" />
+                    <span>
+                      {isSubmitting || airplaneFlying
+                        ? "Folding & Launching Paper Airplane..."
+                        : "Fold & Launch Paper Airplane"}
+                    </span>
+                    <PaperPlaneVector
+                      className={`w-3.5 h-3.5 text-white ${
+                        isSubmitting || airplaneFlying ? "animate-pulse" : ""
+                      }`}
+                    />
                   </button>
                 </div>
               </form>
@@ -288,21 +311,18 @@ export default function SunsetPostboxSection() {
           </div>
         </div>
 
-        {/* Animated Flying Paper Airplane Overlay */}
-        {airplaneFlying && (
-          <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden flex items-center justify-center">
-            <div className="animate-[fly-across_1.8s_cubic-bezier(0.25,1,0.5,1)_forwards] p-2.5 rounded-full bg-[#FFFDF7] border border-[#D0684D]/50 shadow-xl">
-              <PaperPlaneVector className="w-10 h-10 text-[#D0684D]" />
-            </div>
-          </div>
-        )}
-
         {/* Footer Botanical Colophon */}
         <div className="mt-6 pt-3 border-t border-[#C29B72]/40 flex flex-wrap items-center justify-between text-[11px] text-[#5C381E]/70 font-serif italic">
           <span>&copy; {new Date().getFullYear()} Kritika Manandhar</span>
           <span>B.Sc. CSIT • Padmakanya Campus • Tribhuvan University</span>
         </div>
       </ParchmentScroll>
+
+      {/* 3D Origami Scroll Folding & Soaring Paper Airplane Animation */}
+      <OrigamiScrollPlane
+        isActive={airplaneFlying}
+        onFlightComplete={handleFlightComplete}
+      />
     </section>
   );
 }

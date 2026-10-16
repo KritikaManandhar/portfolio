@@ -5,6 +5,7 @@ interface ParchmentScrollProps {
   maxWidth?: string; // e.g. "max-w-2xl", "max-w-[760px]"
   className?: string;
   sealText?: string;
+  isFolding?: boolean; // When true, folds the scroll inward into the origami plane
 }
 
 // Hand-Painted Turned Wooden Finial (Left)
@@ -125,11 +126,22 @@ export default function ParchmentScroll({
   maxWidth = "max-w-[760px]",
   className = "",
   sealText = "吉",
+  isFolding = false,
 }: ParchmentScrollProps) {
   return (
-    <div className={`relative w-full ${maxWidth} mx-auto my-3 sm:my-5 ${className}`}>
+    <div
+      className={`relative w-full ${maxWidth} mx-auto my-3 sm:my-5 transition-all duration-700 ease-in-out ${
+        isFolding
+          ? "scale-[0.22] -rotate-6 opacity-0 filter blur-[0.6px] pointer-events-none"
+          : "scale-100 rotate-0 opacity-100"
+      } ${className}`}
+    >
       {/* 1. BRAIDED SILK HANGING CORD (Artisanal Hanging Loop) */}
-      <div className="flex justify-center -mb-2 sm:-mb-3 pointer-events-none select-none relative z-30">
+      <div
+        className={`flex justify-center -mb-2 sm:-mb-3 pointer-events-none select-none relative z-30 transition-all duration-300 ${
+          isFolding ? "opacity-0 -translate-y-4" : "opacity-100 translate-y-0"
+        }`}
+      >
         <svg
           viewBox="0 0 160 28"
           className="w-24 sm:w-32 h-5 sm:h-6 text-[#9E6536] drop-shadow-[0_2px_4px_rgba(60,30,10,0.25)]"
@@ -151,7 +163,13 @@ export default function ParchmentScroll({
       </div>
 
       {/* 2. TOP WOODEN SCROLL ROLLER (Rolled Paper Cylinder & Lathe-Turned Finials) */}
-      <div className="relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_5px_12px_rgba(40,18,8,0.32)]">
+      <div
+        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_5px_12px_rgba(40,18,8,0.32)] transition-all duration-500 ease-in ${
+          isFolding
+            ? "translate-y-20 scale-y-50 scale-x-75 opacity-0"
+            : "translate-y-0 scale-100 opacity-100"
+        }`}
+      >
         <ScrollFinialLeft />
 
         {/* Master Rolled Parchment Cylinder */}
@@ -182,7 +200,13 @@ export default function ParchmentScroll({
       </div>
 
       {/* 3. THE UNROLLED PARCHMENT SHEET (Authentic Rice Paper Watercolor Texture) */}
-      <div className="relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm overflow-hidden bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 border-[#C2986E]/75">
+      <div
+        className={`relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm overflow-hidden bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 border-[#C2986E]/75 transition-all duration-600 ease-in-out ${
+          isFolding
+            ? "transform perspective-[900px] rotate-y-60 scale-x-40 scale-y-30 opacity-10"
+            : "transform-none opacity-100"
+        }`}
+      >
         {/* Multi-Tone Watercolor Rice-Paper Wash */}
         <div
           className="absolute inset-0 pointer-events-none"
@@ -220,7 +244,13 @@ export default function ParchmentScroll({
       </div>
 
       {/* 4. BOTTOM WOODEN SCROLL ROLLER */}
-      <div className="relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_8px_18px_rgba(40,18,8,0.38)]">
+      <div
+        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_8px_18px_rgba(40,18,8,0.38)] transition-all duration-500 ease-in ${
+          isFolding
+            ? "-translate-y-20 scale-y-50 scale-x-75 opacity-0"
+            : "translate-y-0 scale-100 opacity-100"
+        }`}
+      >
         <ScrollFinialLeft />
 
         {/* Master Rolled Parchment Cylinder */}
