@@ -7,6 +7,147 @@ interface ParchmentScrollProps {
   sealText?: string;
 }
 
+// Left Hand-Painted Turned Wooden Finial
+function ScrollFinialLeft() {
+  return (
+    <svg
+      viewBox="0 0 52 36"
+      className="w-7 sm:w-10 h-5 sm:h-7 shrink-0 select-none pointer-events-none drop-shadow-[0_4px_8px_rgba(50,25,10,0.35)]"
+      fill="none"
+    >
+      <defs>
+        <linearGradient id="woodGradL" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#7E4420" />
+          <stop offset="20%" stopColor="#B87640" />
+          <stop offset="45%" stopColor="#E4A972" />
+          <stop offset="75%" stopColor="#A86532" />
+          <stop offset="100%" stopColor="#5A2E12" />
+        </linearGradient>
+        <linearGradient id="brassGradL" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#8A6B29" />
+          <stop offset="30%" stopColor="#E2BE6C" />
+          <stop offset="60%" stopColor="#C99B42" />
+          <stop offset="100%" stopColor="#684C16" />
+        </linearGradient>
+        <linearGradient id="endCapGradL" x1="0%" y1="30%" x2="100%" y2="70%">
+          <stop offset="0%" stopColor="#E4A972" />
+          <stop offset="40%" stopColor="#A86532" />
+          <stop offset="100%" stopColor="#4A240C" />
+        </linearGradient>
+      </defs>
+
+      {/* Outer Turned Teardrop / Dome Tip */}
+      <path
+        d="M 12 7 C 4 7, 1 12, 1 18 C 1 24, 4 29, 12 29 C 16 29, 18 26.5, 20 24.5 L 20 11.5 C 18 9.5, 16 7, 12 7 Z"
+        fill="url(#endCapGradL)"
+        stroke="#48220A"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      {/* Turned Ring Bead */}
+      <path
+        d="M 20 11.5 C 22.5 10.5, 24.5 10.5, 26 11.5 L 26 24.5 C 24.5 25.5, 22.5 25.5, 20 24.5 Z"
+        fill="url(#woodGradL)"
+        stroke="#48220A"
+        strokeWidth="1.4"
+      />
+      {/* Antique Brass Collar Ring */}
+      <rect
+        x="26"
+        y="9.5"
+        width="5"
+        height="17"
+        rx="1"
+        fill="url(#brassGradL)"
+        stroke="#4E350E"
+        strokeWidth="1.2"
+      />
+      {/* Sleeve joining into main dowel */}
+      <path
+        d="M 31 11 L 52 11 L 52 25 L 31 25 Z"
+        fill="url(#woodGradL)"
+        stroke="#48220A"
+        strokeWidth="1.5"
+      />
+      {/* Delicate watercolor reflection sheen */}
+      <path
+        d="M 6 15 Q 12 11 18 13.5"
+        stroke="rgba(255,255,255,0.45)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// Right Hand-Painted Turned Wooden Finial (Symmetric Mirror)
+function ScrollFinialRight() {
+  return (
+    <svg
+      viewBox="0 0 52 36"
+      className="w-7 sm:w-10 h-5 sm:h-7 shrink-0 select-none pointer-events-none drop-shadow-[0_4px_8px_rgba(50,25,10,0.35)] -scale-x-100"
+      fill="none"
+    >
+      <defs>
+        <linearGradient id="woodGradR" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#7E4420" />
+          <stop offset="20%" stopColor="#B87640" />
+          <stop offset="45%" stopColor="#E4A972" />
+          <stop offset="75%" stopColor="#A86532" />
+          <stop offset="100%" stopColor="#5A2E12" />
+        </linearGradient>
+        <linearGradient id="brassGradR" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#8A6B29" />
+          <stop offset="30%" stopColor="#E2BE6C" />
+          <stop offset="60%" stopColor="#C99B42" />
+          <stop offset="100%" stopColor="#684C16" />
+        </linearGradient>
+        <linearGradient id="endCapGradR" x1="0%" y1="30%" x2="100%" y2="70%">
+          <stop offset="0%" stopColor="#E4A972" />
+          <stop offset="40%" stopColor="#A86532" />
+          <stop offset="100%" stopColor="#4A240C" />
+        </linearGradient>
+      </defs>
+
+      <path
+        d="M 12 7 C 4 7, 1 12, 1 18 C 1 24, 4 29, 12 29 C 16 29, 18 26.5, 20 24.5 L 20 11.5 C 18 9.5, 16 7, 12 7 Z"
+        fill="url(#endCapGradR)"
+        stroke="#48220A"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M 20 11.5 C 22.5 10.5, 24.5 10.5, 26 11.5 L 26 24.5 C 24.5 25.5, 22.5 25.5, 20 24.5 Z"
+        fill="url(#woodGradR)"
+        stroke="#48220A"
+        strokeWidth="1.4"
+      />
+      <rect
+        x="26"
+        y="9.5"
+        width="5"
+        height="17"
+        rx="1"
+        fill="url(#brassGradR)"
+        stroke="#4E350E"
+        strokeWidth="1.2"
+      />
+      <path
+        d="M 31 11 L 52 11 L 52 25 L 31 25 Z"
+        fill="url(#woodGradR)"
+        stroke="#48220A"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M 6 15 Q 12 11 18 13.5"
+        stroke="rgba(255,255,255,0.45)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export default function ParchmentScroll({
   children,
   maxWidth = "max-w-4xl",
@@ -15,80 +156,80 @@ export default function ParchmentScroll({
 }: ParchmentScrollProps) {
   return (
     <div className={`relative w-full ${maxWidth} mx-auto my-6 ${className}`}>
-      {/* 1. TOP HANGING SILK CORD (Traditional Emakimono Hanging Loop) */}
-      <div className="flex justify-center -mb-2 pointer-events-none select-none">
+      {/* 1. BRAIDED SILK HANGING CORD (Artisanal Hanging Loop) */}
+      <div className="flex justify-center -mb-2.5 pointer-events-none select-none">
         <svg
-          viewBox="0 0 180 32"
-          className="w-36 sm:w-44 h-7 text-[#7D522F] drop-shadow-xs"
+          viewBox="0 0 200 36"
+          className="w-40 sm:w-52 h-8 text-[#9E6536] drop-shadow-[0_2px_3px_rgba(60,30,10,0.25)]"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.5"
           strokeLinecap="round"
         >
-          {/* Braided cord triangular loop with top ring */}
-          <path d="M12 30 Q 90 2 168 30" strokeDasharray="5 3" />
-          <circle cx="90" cy="5" r="3.5" fill="#C29B72" stroke="#5C381E" strokeWidth="1.5" />
-          <path d="M90 8.5 v 10" stroke="#7D522F" strokeWidth="2" />
+          {/* Natural curved hanging cords */}
+          <path
+            d="M 16 32 C 60 12, 85 4, 100 4 C 115 4, 140 12, 184 32"
+            stroke="#9E6536"
+            strokeWidth="2.5"
+            strokeDasharray="4 2"
+          />
+          {/* Top hanging brass eyelet ring */}
+          <circle cx="100" cy="5" r="4.5" fill="#E4BA68" stroke="#5A3A16" strokeWidth="1.5" />
+          <circle cx="100" cy="5" r="2" fill="#FAF3E0" />
+          {/* Cord binding knots */}
+          <circle cx="28" cy="27" r="2.5" fill="#6E4018" />
+          <circle cx="172" cy="27" r="2.5" fill="#6E4018" />
         </svg>
       </div>
 
-      {/* 2. TOP WOODEN SCROLL ROLLER (Dowel & Carved Finials) */}
-      <div className="relative -mx-3 sm:-mx-6 z-30 flex items-center select-none pointer-events-none">
-        {/* Left Finial (Turned Wooden Knob with Brass Collar) */}
-        <div className="w-5 h-7 sm:w-7 sm:h-9 shrink-0 rounded-l-full bg-gradient-to-r from-[#2B180A] via-[#5C381E] to-[#8C5835] border-y border-l border-[#2B180A] shadow-md flex items-center justify-end">
-          <div className="w-1.5 sm:w-2 h-full bg-gradient-to-r from-[#D4AF37] to-[#8C6D23] border-r border-[#4A3510]" />
+      {/* 2. TOP WOODEN SCROLL ROLLER (Honey-Oak Anime Dowel & Turned Finials) */}
+      <div className="relative -mx-2.5 sm:-mx-5 z-30 flex items-center select-none pointer-events-none">
+        <ScrollFinialLeft />
+
+        {/* Master Cylindrical Honey-Oak Rod */}
+        <div className="grow h-4 sm:h-5 bg-gradient-to-b from-[#7E4420] via-[#B87640] via-[#E4A972] via-[#A86532] to-[#5A2E12] relative border-y border-[#48220A] shadow-[0_4px_10px_rgba(50,25,10,0.32)]">
+          {/* Top painted sunlight reflection highlight */}
+          <div className="absolute top-[2px] inset-x-0 h-[2.5px] bg-white/40 blur-[0.4px]" />
+          <div className="absolute bottom-[1.5px] inset-x-0 h-[2px] bg-[#381B08]/40" />
         </div>
 
-        {/* Master Cylindrical Wooden Rod */}
-        <div className="grow h-5 sm:h-6 bg-gradient-to-b from-[#4A2D18] via-[#8C5835] via-[#A66E44] to-[#3B2210] shadow-[0_4px_8px_rgba(20,10,5,0.4)] relative overflow-hidden border-y border-[#3B2210]">
-          {/* Wood grain highlight streak */}
-          <div className="absolute top-1 inset-x-0 h-1 bg-white/20 blur-[0.5px]" />
-          <div className="absolute bottom-0.5 inset-x-0 h-1 bg-black/35" />
-        </div>
-
-        {/* Right Finial (Turned Wooden Knob with Brass Collar) */}
-        <div className="w-5 h-7 sm:w-7 sm:h-9 shrink-0 rounded-r-full bg-gradient-to-l from-[#2B180A] via-[#5C381E] to-[#8C5835] border-y border-r border-[#2B180A] shadow-md flex items-center justify-start">
-          <div className="w-1.5 sm:w-2 h-full bg-gradient-to-l from-[#D4AF37] to-[#8C6D23] border-l border-[#4A3510]" />
-        </div>
+        <ScrollFinialRight />
       </div>
 
-      {/* 3. THE UNROLLED PARCHMENT PAPER BODY */}
-      <div className="relative z-20 -mt-2.5 sm:-mt-3 -mb-2.5 sm:-mb-3 bg-[#FAF3E0] shadow-[0_20px_45px_-10px_rgba(35,20,10,0.38),inset_18px_0_24px_-14px_rgba(80,50,20,0.18),inset_-18px_0_24px_-14px_rgba(80,50,20,0.18)]">
-        {/* Parchment Paper Gradient Overlays */}
+      {/* 3. THE UNROLLED PARCHMENT SHEET WITH 3D CURLED PAPER ROLL LIPS */}
+      <div className="relative z-20 -mt-2 sm:-mt-2.5 -mb-2 sm:-mb-2.5 rounded-t-xl sm:rounded-t-2xl rounded-b-xl sm:rounded-b-2xl overflow-hidden bg-[#FAF4E6] shadow-[0_22px_48px_-12px_rgba(40,22,10,0.35),0_6px_16px_rgba(50,25,10,0.12)] border-x border-[#C29B72]/50">
+        {/* Soft Parchment Paper Texture & Edge Shadows */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(180deg, #F5ECD2 0%, #FAF4E6 6%, #F9F2E3 50%, #FAF4E6 94%, #F2E5C4 100%)",
+              "linear-gradient(180deg, #F5ECD2 0%, #FAF5E8 5%, #F9F2E3 50%, #FAF5E8 95%, #EFE1C2 100%)",
           }}
         />
 
-        {/* Top & Bottom Roll Curl Shadows (Simulating curved unrolled paper roll) */}
-        <div className="absolute top-0 inset-x-0 h-6 bg-gradient-to-b from-[#4A2D18]/45 via-[#4A2D18]/15 to-transparent pointer-events-none z-10" />
-        <div className="absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-[#4A2D18]/45 via-[#4A2D18]/15 to-transparent pointer-events-none z-10" />
+        {/* Top Roll Paper Hem & Cast Shadow (Paper smoothly wrapping around the roller) */}
+        <div className="absolute top-0 inset-x-0 h-7 bg-gradient-to-b from-[#5A2E12]/35 via-[#5A2E12]/12 to-transparent pointer-events-none z-10" />
+        {/* Bottom Roll Paper Hem & Cast Shadow */}
+        <div className="absolute bottom-0 inset-x-0 h-7 bg-gradient-to-t from-[#5A2E12]/35 via-[#5A2E12]/12 to-transparent pointer-events-none z-10" />
 
-        {/* Deckled / Deckle-Edged Lateral Borders */}
-        <div className="absolute top-0 bottom-0 left-0 w-2.5 bg-gradient-to-r from-[#4A2D18]/25 to-transparent pointer-events-none z-10" />
-        <div className="absolute top-0 bottom-0 right-0 w-2.5 bg-gradient-to-l from-[#4A2D18]/25 to-transparent pointer-events-none z-10" />
+        {/* Left and Right Curled Paper Lateral Vignette */}
+        <div className="absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-r from-[#5A2E12]/20 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 bottom-0 right-0 w-3 bg-gradient-to-l from-[#5A2E12]/20 to-transparent pointer-events-none z-10" />
 
-        {/* Inner Decorative Inked Border with Traditional Corner Flourishes */}
-        <div className="relative z-10 m-2.5 sm:m-4 p-5 sm:p-10 border-2 border-[#C29B72]/70 rounded-xs bg-[#FAF5E8]/60 shadow-[inset_0_0_25px_rgba(180,140,90,0.1)]">
-          {/* Subtle Corner Knot Accents */}
-          <div className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-[#8C5835]" />
-          <div className="absolute -top-1.5 -right-1.5 w-3 h-3 border-t-2 border-r-2 border-[#8C5835]" />
-          <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 border-b-2 border-l-2 border-[#8C5835]" />
-          <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#8C5835]" />
+        {/* Inner Decorative Traditional Inked Border */}
+        <div className="relative z-10 m-3 sm:m-5 p-5 sm:p-9 border-2 border-[#C29B72]/65 rounded-lg bg-[#FAF5E8]/60 shadow-[inset_0_0_20px_rgba(180,140,90,0.1)]">
+          {/* Traditional Inked Corner Brackets */}
+          <div className="absolute top-1.5 left-1.5 w-3.5 h-3.5 border-t-2 border-l-2 border-[#8A5229]/80" />
+          <div className="absolute top-1.5 right-1.5 w-3.5 h-3.5 border-t-2 border-r-2 border-[#8A5229]/80" />
+          <div className="absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-b-2 border-l-2 border-[#8A5229]/80" />
+          <div className="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-b-2 border-r-2 border-[#8A5229]/80" />
 
-          {/* Oriental / Ghibli Style Vermilion Artist Hanko Stamp */}
+          {/* Authentic Hand-Pressed Vermilion Artist Hanko Stamp */}
           <div
-            className="absolute top-3 right-3 sm:top-5 sm:right-6 w-9 h-9 sm:w-11 sm:h-11 rounded-md border-2 border-[#C0392B] bg-[#C0392B]/10 flex flex-col items-center justify-center text-[#C0392B] select-none pointer-events-none shadow-xs transform rotate-2"
-            title="Studio Seal"
+            className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 w-8 h-8 sm:w-10 sm:h-10 rounded-md border-2 border-[#B83828] bg-[#B83828]/12 flex items-center justify-center text-[#B83828] select-none pointer-events-none shadow-2xs transform rotate-2"
+            title="Studio Hanko Stamp"
           >
-            <span className="text-base sm:text-lg font-serif font-bold leading-none">
+            <span className="text-base sm:text-lg font-serif font-bold leading-none select-none">
               {sealText}
-            </span>
-            <span className="text-[7px] tracking-widest font-mono uppercase font-bold mt-0.5">
-              GHIBLI
             </span>
           </div>
 
@@ -97,23 +238,17 @@ export default function ParchmentScroll({
         </div>
       </div>
 
-      {/* 4. BOTTOM WOODEN SCROLL ROLLER (Dowel & Carved Finials) */}
-      <div className="relative -mx-3 sm:-mx-6 z-30 flex items-center select-none pointer-events-none">
-        {/* Left Finial */}
-        <div className="w-5 h-7 sm:w-7 sm:h-9 shrink-0 rounded-l-full bg-gradient-to-r from-[#2B180A] via-[#5C381E] to-[#8C5835] border-y border-l border-[#2B180A] shadow-md flex items-center justify-end">
-          <div className="w-1.5 sm:w-2 h-full bg-gradient-to-r from-[#D4AF37] to-[#8C6D23] border-r border-[#4A3510]" />
+      {/* 4. BOTTOM WOODEN SCROLL ROLLER (Weighted Roller Dowel & Turned Finials) */}
+      <div className="relative -mx-2.5 sm:-mx-5 z-30 flex items-center select-none pointer-events-none">
+        <ScrollFinialLeft />
+
+        {/* Master Cylindrical Honey-Oak Rod */}
+        <div className="grow h-4 sm:h-5 bg-gradient-to-b from-[#7E4420] via-[#B87640] via-[#E4A972] via-[#A86532] to-[#5A2E12] relative border-y border-[#48220A] shadow-[0_6px_14px_rgba(50,25,10,0.4)]">
+          <div className="absolute top-[2px] inset-x-0 h-[2.5px] bg-white/40 blur-[0.4px]" />
+          <div className="absolute bottom-[1.5px] inset-x-0 h-[2px] bg-[#381B08]/40" />
         </div>
 
-        {/* Master Cylindrical Wooden Rod */}
-        <div className="grow h-5 sm:h-6 bg-gradient-to-b from-[#4A2D18] via-[#8C5835] via-[#A66E44] to-[#3B2210] shadow-[0_6px_12px_rgba(20,10,5,0.45)] relative overflow-hidden border-y border-[#3B2210]">
-          <div className="absolute top-1 inset-x-0 h-1 bg-white/20 blur-[0.5px]" />
-          <div className="absolute bottom-0.5 inset-x-0 h-1 bg-black/35" />
-        </div>
-
-        {/* Right Finial */}
-        <div className="w-5 h-7 sm:w-7 sm:h-9 shrink-0 rounded-r-full bg-gradient-to-l from-[#2B180A] via-[#5C381E] to-[#8C5835] border-y border-r border-[#2B180A] shadow-md flex items-center justify-start">
-          <div className="w-1.5 sm:w-2 h-full bg-gradient-to-l from-[#D4AF37] to-[#8C6D23] border-l border-[#4A3510]" />
-        </div>
+        <ScrollFinialRight />
       </div>
     </div>
   );

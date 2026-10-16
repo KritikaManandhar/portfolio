@@ -26,9 +26,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const rafId = requestAnimationFrame(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, [onScroll]);
 
   const handleFrameChange = useCallback((frame: number) => {
