@@ -4,6 +4,7 @@ import React from "react";
 import { Sprout, GraduationCap, Scroll, MapPin } from "lucide-react";
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
 import { GithubIcon } from "@/components/ui/VectorIcons";
+import ParchmentScroll from "@/components/ui/ParchmentScroll";
 
 export default function GreenhouseLogbookSection() {
   const specimenLogs = [
@@ -13,8 +14,8 @@ export default function GreenhouseLogbookSection() {
       institution: "Padmakanya Multiple Campus, Tribhuvan University",
       tenure: "2022 – 2026",
       location: "Mhepi, Kathmandu, Nepal",
-      icon: <GraduationCap className="w-6 h-6 text-[#7A9A7E]" />,
-      color: "border-[#7A9A7E]/40 bg-[#7A9A7E]/10",
+      icon: <GraduationCap className="w-5 h-5 text-[#6B8A68]" />,
+      color: "border-[#6B8A68]/40 bg-[#FFFDF7]",
     },
     {
       genus: "Practical Cultivation",
@@ -22,8 +23,8 @@ export default function GreenhouseLogbookSection() {
       institution: "Broadway Infosys Nepal",
       tenure: "Core Certificate & Practicum",
       location: "Kathmandu, Nepal",
-      icon: <Scroll className="w-6 h-6 text-[#E07A5F]" />,
-      color: "border-[#E07A5F]/40 bg-[#E07A5F]/10",
+      icon: <Scroll className="w-5 h-5 text-[#D0684D]" />,
+      color: "border-[#D0684D]/40 bg-[#FFFDF7]",
     },
     {
       genus: "Open Source Habitat",
@@ -31,8 +32,8 @@ export default function GreenhouseLogbookSection() {
       institution: "github.com/KritikaManandhar",
       tenure: "Active Repositories & Practicum",
       location: "Version Control Ecosystem",
-      icon: <GithubIcon className="w-6 h-6 text-[#7A9A7E]" />,
-      color: "border-[#F3C68F]/60 bg-[#F3C68F]/20",
+      icon: <GithubIcon className="w-5 h-5 text-[#8C5835]" />,
+      color: "border-[#C29B72]/50 bg-[#FFFDF7]",
     },
   ];
 
@@ -41,26 +42,23 @@ export default function GreenhouseLogbookSection() {
       id="greenhouse"
       className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 py-20 relative z-10"
     >
-      <div className="max-w-4xl w-full ghibli-card p-6 sm:p-10 relative">
-        <div className="washi-tape washi-tape-top-left" />
-        <div className="washi-tape washi-tape-top-right" />
-
+      <ParchmentScroll maxWidth="max-w-4xl" sealText="学">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-[#7A9A7E] bg-[#7A9A7E]/15 border border-[#7A9A7E]/30 flex items-center gap-1.5">
-            <Sprout className="w-3.5 h-3.5 text-[#7A9A7E]" />
+        <div className="flex items-center justify-between mb-4 pr-12">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-[#6B8A68] bg-[#6B8A68]/15 border border-[#6B8A68]/35 flex items-center gap-1.5 shadow-2xs">
+            <Sprout className="w-3.5 h-3.5 text-[#6B8A68]" />
             <span>Section 04 • The Glass Greenhouse Logbook</span>
           </span>
-          <span className="text-xs text-[#3D352E]/60 font-mono">
+          <span className="text-xs text-[#5C381E]/70 font-serif italic">
             Education &amp; Guild
           </span>
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#3D352E] tracking-tight mb-2">
+        <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#3D2E24] tracking-tight mb-2">
           Conservatory Specimen Logbook
         </h2>
-        <p className="text-xs sm:text-sm text-[#3D352E]/75 mb-8">
-          Academic foundation, vocational coursework, and developer milestones cataloged like pressed foliage in a glass greenhouse.
+        <p className="text-xs sm:text-sm text-[#5C381E]/80 mb-8 font-serif">
+          Academic foundation, vocational coursework, and developer milestones cataloged like pressed foliage in an unrolled conservatory scroll.
         </p>
 
         {/* Specimen Logs Grid */}
@@ -69,27 +67,27 @@ export default function GreenhouseLogbookSection() {
             <div
               key={log.specimen}
               onClick={(e) => triggerLeafBurst(e.clientX, e.clientY, true)}
-              className={`p-5 rounded-2xl border ${log.color} shadow-xs relative cursor-pointer hover:scale-[1.02] transition-transform`}
+              className={`p-5 rounded-xl border ${log.color} shadow-2xs relative cursor-pointer hover:border-[#6B8A68] transition-all`}
             >
               <div className="flex items-center justify-between mb-3">
-                <div className="p-2 rounded-xl bg-white/70 shadow-2xs">
+                <div className="p-2 rounded-lg bg-[#FAF5E8] border border-[#C29B72]/40 shadow-2xs">
                   {log.icon}
                 </div>
-                <span className="text-[10px] font-mono text-[#3D352E]/60 uppercase">
+                <span className="text-[10px] font-mono text-[#5C381E]/70 uppercase">
                   {log.tenure}
                 </span>
               </div>
-              <p className="text-[10px] font-mono uppercase tracking-wider text-[#7A9A7E] mb-1">
+              <p className="text-[10px] font-serif uppercase tracking-wider text-[#6B8A68] font-bold mb-1">
                 {log.genus}
               </p>
-              <h3 className="font-serif font-bold text-sm text-[#3D352E] leading-snug mb-2">
+              <h3 className="font-serif font-bold text-sm text-[#3D2E24] leading-snug mb-2">
                 {log.specimen}
               </h3>
-              <p className="text-xs text-[#3D352E]/80 mb-2">
+              <p className="text-xs text-[#3D2E24]/85 mb-2 font-serif">
                 {log.institution}
               </p>
-              <p className="text-[11px] text-[#3D352E]/60 flex items-center gap-1.5">
-                <MapPin className="w-3 h-3 text-[#7A9A7E]" />
+              <p className="text-[11px] text-[#5C381E]/70 flex items-center gap-1.5 font-serif italic">
+                <MapPin className="w-3 h-3 text-[#6B8A68]" />
                 <span>{log.location}</span>
               </p>
             </div>
@@ -97,15 +95,15 @@ export default function GreenhouseLogbookSection() {
         </div>
 
         {/* GitHub Guild Banner */}
-        <div className="p-6 rounded-2xl bg-[#FAF6F0] border border-[#7A9A7E]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-6 rounded-xl bg-[#FFFDF7] border border-[#C29B72]/50 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <GithubIcon className="w-5 h-5 text-[#3D352E]" />
-              <h4 className="font-serif font-bold text-base text-[#3D352E]">
+              <GithubIcon className="w-5 h-5 text-[#3D2E24]" />
+              <h4 className="font-serif font-bold text-base text-[#3D2E24]">
                 KritikaManandhar on GitHub
               </h4>
             </div>
-            <p className="text-xs text-[#3D352E]/75">
+            <p className="text-xs text-[#5C381E]/80 font-serif">
               Explore active repositories, source code implementations, and project branches.
             </p>
           </div>
@@ -115,13 +113,13 @@ export default function GreenhouseLogbookSection() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => triggerLeafBurst(e.clientX, e.clientY, true)}
-            className="px-5 py-2.5 rounded-xl bg-[#7A9A7E] hover:bg-[#68886C] text-white text-xs sm:text-sm font-semibold transition-all shadow-sm flex items-center gap-2 whitespace-nowrap self-stretch sm:self-auto justify-center"
+            className="px-5 py-2.5 rounded-lg bg-[#6B8A68] hover:bg-[#5A7757] text-[#FFFDF9] text-xs sm:text-sm font-semibold transition-all shadow-xs border border-[#4E6B4B] flex items-center gap-2 whitespace-nowrap self-stretch sm:self-auto justify-center"
           >
             <GithubIcon className="w-4 h-4" />
             <span>Visit GitHub Profile &rarr;</span>
           </a>
         </div>
-      </div>
+      </ParchmentScroll>
     </section>
   );
 }

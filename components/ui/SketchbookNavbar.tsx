@@ -45,10 +45,10 @@ export default function SketchbookNavbar({
 
   return (
     <header className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl">
-      <nav className="ghibli-card px-4 py-2.5 sm:px-6 sm:py-3 flex items-center justify-between shadow-md">
+      <nav className="bg-[#FAF3E0]/95 backdrop-blur-xs border-2 border-[#C29B72]/70 rounded-xl px-4 py-2.5 sm:px-6 sm:py-3 flex items-center justify-between shadow-[0_8px_24px_-4px_rgba(45,30,15,0.22)]">
         {/* Author Title / Studio Mark */}
         <div className="flex items-center gap-2">
-          <Sprout className="w-5 h-5 text-[#7A9A7E]" />
+          <Sprout className="w-5 h-5 text-[#6B8A68]" />
           <span className="font-serif font-bold text-sm sm:text-base tracking-tight text-[#3D352E]">
             Kritika Manandhar
           </span>

@@ -44,6 +44,7 @@ export default function Home() {
       <SketchbookNavbar
         currentFrame={currentFrame}
         totalFrames={totalFrames}
+        scrollProgress={scrollProgress}
       />
 
       {/* 3. Full-Screen Sticky Background Canvas (100% Scroll-Linked) */}

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
+import ParchmentScroll from "@/components/ui/ParchmentScroll";
 
 export default function BotanistShelfSection() {
   const [bloomed, setBloomed] = useState<boolean>(false);
@@ -35,14 +36,11 @@ export default function BotanistShelfSection() {
       id="skills"
       className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 py-20 relative z-10"
     >
-      <div className="max-w-4xl w-full ghibli-card p-6 sm:p-10 relative">
-        <div className="washi-tape washi-tape-top-left" />
-        <div className="washi-tape washi-tape-top-right" />
-
+      <ParchmentScroll maxWidth="max-w-4xl" sealText="草">
         {/* Header Tag */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-[#7A9A7E] bg-[#7A9A7E]/15 border border-[#7A9A7E]/30 flex items-center gap-1.5">
-            <Sprout className="w-3.5 h-3.5 text-[#7A9A7E]" />
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pr-12">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-[#6B8A68] bg-[#6B8A68]/15 border border-[#6B8A68]/35 flex items-center gap-1.5 shadow-2xs">
+            <Sprout className="w-3.5 h-3.5 text-[#6B8A68]" />
             <span>Section 02 • Botanist Field Guide</span>
           </span>
 
@@ -50,52 +48,52 @@ export default function BotanistShelfSection() {
           <button
             type="button"
             onClick={handleWaterCan}
-            className="px-3.5 py-1.5 rounded-full bg-[#FAF6F0] hover:bg-[#F3ECE1] border border-[#7A9A7E]/30 text-xs font-semibold text-[#3D352E] flex items-center gap-2 shadow-xs transition-all active:scale-95 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-[#FFFDF7] hover:bg-[#F5ECD2] border border-[#C29B72]/70 text-xs font-serif font-semibold text-[#3D2E24] flex items-center gap-2 shadow-2xs transition-all active:scale-95 cursor-pointer"
             title="Click to nurture the plant specimens"
           >
-            <Droplets className="w-3.5 h-3.5 text-[#7A9A7E]" />
+            <Droplets className="w-3.5 h-3.5 text-[#6B8A68]" />
             <span>{bloomed ? "Vibrant & Blooming!" : "Water Plants"}</span>
-            {bloomed && <Sparkles className="w-3 h-3 text-[#E07A5F]" />}
+            {bloomed && <Sparkles className="w-3 h-3 text-[#D0684D]" />}
           </button>
         </div>
 
-        <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#3D352E] tracking-tight mb-2">
+        <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#3D2E24] tracking-tight mb-2">
           Botanical Skills &amp; Field Guide
         </h2>
-        <p className="text-xs sm:text-sm text-[#3D352E]/75 mb-8">
+        <p className="text-xs sm:text-sm text-[#5C381E]/80 mb-8 font-serif">
           Cultivated programming languages, database architectures, and UI craft cataloged like pressed herbarium specimens.
         </p>
 
         {/* 3 Field Guide Specimen Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Card 1: Programming */}
-          <div className="p-5 rounded-2xl bg-[#FAF6F0]/90 border border-[#7A9A7E]/25 shadow-xs relative">
+          <div className="p-5 rounded-xl bg-[#FFFDF7] border border-[#C29B72]/45 shadow-2xs relative">
             <div className="flex items-center gap-2 mb-3">
-              <div className="p-1.5 rounded-lg bg-[#7A9A7E]/10">
-                <Code className="w-4 h-4 text-[#7A9A7E]" />
+              <div className="p-1.5 rounded-lg bg-[#6B8A68]/15 border border-[#6B8A68]/30">
+                <Code className="w-4 h-4 text-[#6B8A68]" />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#3D352E]">
+              <h3 className="font-serif font-bold text-sm text-[#3D2E24]">
                 Herbarium Programming
               </h3>
             </div>
-            <p className="text-[11px] text-[#3D352E]/65 mb-4 leading-relaxed">
+            <p className="text-[11px] text-[#5C381E]/70 mb-4 leading-relaxed font-sans">
               Foundational logic, object-oriented concepts, and algorithms.
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {programmingSkills.map((skill) => (
                 <span
                   key={skill}
                   onClick={(e) => triggerLeafBurst(e.clientX, e.clientY, true)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all border flex items-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-md text-xs font-serif cursor-pointer transition-all border flex items-center gap-1.5 shadow-2xs ${
                     bloomed
-                      ? "bg-[#F4ACB7]/30 border-[#F4ACB7] text-[#3D352E] scale-105"
-                      : "bg-[#F3ECE1] border-[#D8C7B0] text-[#3D352E] hover:border-[#7A9A7E]"
+                      ? "bg-[#D0684D]/15 border-[#D0684D] text-[#3D2E24] scale-105"
+                      : "bg-[#FAF5E8] border-[#C29B72]/60 text-[#3D2E24] hover:border-[#6B8A68]"
                   }`}
                 >
                   {bloomed ? (
-                    <Flower2 className="w-3 h-3 text-[#E07A5F]" />
+                    <Flower2 className="w-3 h-3 text-[#D0684D]" />
                   ) : (
-                    <Leaf className="w-3 h-3 text-[#7A9A7E]" />
+                    <Leaf className="w-3 h-3 text-[#6B8A68]" />
                   )}
                   <span>{skill}</span>
                 </span>
@@ -104,33 +102,33 @@ export default function BotanistShelfSection() {
           </div>
 
           {/* Card 2: Web & Databases */}
-          <div className="p-5 rounded-2xl bg-[#FAF6F0]/90 border border-[#E07A5F]/25 shadow-xs relative">
+          <div className="p-5 rounded-xl bg-[#FFFDF7] border border-[#C29B72]/45 shadow-2xs relative">
             <div className="flex items-center gap-2 mb-3">
-              <div className="p-1.5 rounded-lg bg-[#E07A5F]/10">
-                <Database className="w-4 h-4 text-[#E07A5F]" />
+              <div className="p-1.5 rounded-lg bg-[#D0684D]/15 border border-[#D0684D]/30">
+                <Database className="w-4 h-4 text-[#D0684D]" />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#3D352E]">
+              <h3 className="font-serif font-bold text-sm text-[#3D2E24]">
                 Web &amp; Databases
               </h3>
             </div>
-            <p className="text-[11px] text-[#3D352E]/65 mb-4 leading-relaxed">
+            <p className="text-[11px] text-[#5C381E]/70 mb-4 leading-relaxed font-sans">
               Relational schemas, queries, and responsive front-end structures.
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {webSkills.map((skill) => (
                 <span
                   key={skill}
                   onClick={(e) => triggerLeafBurst(e.clientX, e.clientY, true)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all border flex items-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-md text-xs font-serif cursor-pointer transition-all border flex items-center gap-1.5 shadow-2xs ${
                     bloomed
-                      ? "bg-[#F3C68F]/40 border-[#E07A5F] text-[#3D352E] scale-105"
-                      : "bg-[#F3ECE1] border-[#D8C7B0] text-[#3D352E] hover:border-[#E07A5F]"
+                      ? "bg-[#D0684D]/15 border-[#D0684D] text-[#3D2E24] scale-105"
+                      : "bg-[#FAF5E8] border-[#C29B72]/60 text-[#3D2E24] hover:border-[#D0684D]"
                   }`}
                 >
                   {bloomed ? (
-                    <Sparkles className="w-3 h-3 text-[#E07A5F]" />
+                    <Sparkles className="w-3 h-3 text-[#D0684D]" />
                   ) : (
-                    <Leaf className="w-3 h-3 text-[#7A9A7E]" />
+                    <Leaf className="w-3 h-3 text-[#6B8A68]" />
                   )}
                   <span>{skill}</span>
                 </span>
@@ -139,33 +137,33 @@ export default function BotanistShelfSection() {
           </div>
 
           {/* Card 3: Design & Training */}
-          <div className="p-5 rounded-2xl bg-[#FAF6F0]/90 border border-[#F4ACB7]/40 shadow-xs relative">
+          <div className="p-5 rounded-xl bg-[#FFFDF7] border border-[#C29B72]/45 shadow-2xs relative">
             <div className="flex items-center gap-2 mb-3">
-              <div className="p-1.5 rounded-lg bg-[#F4ACB7]/20">
-                <Palette className="w-4 h-4 text-[#E07A5F]" />
+              <div className="p-1.5 rounded-lg bg-[#C29B72]/20 border border-[#C29B72]/40">
+                <Palette className="w-4 h-4 text-[#8C5835]" />
               </div>
-              <h3 className="font-serif font-bold text-sm text-[#3D352E]">
+              <h3 className="font-serif font-bold text-sm text-[#3D2E24]">
                 Design &amp; Training
               </h3>
             </div>
-            <p className="text-[11px] text-[#3D352E]/65 mb-4 leading-relaxed">
+            <p className="text-[11px] text-[#5C381E]/70 mb-4 leading-relaxed font-sans">
               Prototyping, visual aesthetics, and structured web development training.
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {designSkills.map((skill) => (
                 <span
                   key={skill}
                   onClick={(e) => triggerLeafBurst(e.clientX, e.clientY, true)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer transition-all border flex items-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-md text-xs font-serif cursor-pointer transition-all border flex items-center gap-1.5 shadow-2xs ${
                     bloomed
-                      ? "bg-[#7A9A7E]/30 border-[#7A9A7E] text-[#3D352E] scale-105"
-                      : "bg-[#F3ECE1] border-[#D8C7B0] text-[#3D352E] hover:border-[#F4ACB7]"
+                      ? "bg-[#6B8A68]/15 border-[#6B8A68] text-[#3D2E24] scale-105"
+                      : "bg-[#FAF5E8] border-[#C29B72]/60 text-[#3D2E24] hover:border-[#8C5835]"
                   }`}
                 >
                   {bloomed ? (
-                    <Flower2 className="w-3 h-3 text-[#7A9A7E]" />
+                    <Flower2 className="w-3 h-3 text-[#6B8A68]" />
                   ) : (
-                    <Leaf className="w-3 h-3 text-[#7A9A7E]" />
+                    <Leaf className="w-3 h-3 text-[#6B8A68]" />
                   )}
                   <span>{skill}</span>
                 </span>
@@ -175,11 +173,11 @@ export default function BotanistShelfSection() {
         </div>
 
         {/* Botanical Log Footer Note */}
-        <div className="mt-8 pt-4 border-t border-[#7A9A7E]/20 flex flex-wrap items-center justify-between text-xs text-[#3D352E]/70 font-mono">
+        <div className="mt-8 pt-4 border-t border-[#C29B72]/40 flex flex-wrap items-center justify-between text-xs text-[#5C381E]/70 font-serif italic">
           <span>Field Observation: Broadway Infosys Certified Web Design</span>
           <span>Habitat: Padmakanya CSIT Lab</span>
         </div>
-      </div>
+      </ParchmentScroll>
     </section>
   );
 }

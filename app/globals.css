@@ -2,14 +2,15 @@
 
 :root {
   --background: #FAF6F0;
-  --foreground: #3D352E;
+  --foreground: #3D2E24;
   --ghibli-cream: #FAF6F0;
   --ghibli-linen: #F3ECE1;
-  --ghibli-sage: #7A9A7E;
-  --ghibli-terracotta: #E07A5F;
-  --ghibli-pink: #F4ACB7;
-  --ghibli-espresso: #3D352E;
-  --ghibli-gold: #F3C68F;
+  --ghibli-parchment: #F5ECD2;
+  --ghibli-sage: #6B8A68;
+  --ghibli-terracotta: #D0684D;
+  --ghibli-umber: #5C381E;
+  --ghibli-espresso: #3D2E24;
+  --ghibli-gold: #C29B72;
 }
 
 body {
@@ -21,23 +22,16 @@ body {
 
 /* Studio Ghibli Organic Card Styles */
 .ghibli-card {
-  background-color: rgba(243, 236, 225, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(122, 154, 126, 0.28);
-  border-radius: 28px 18px 32px 20px;
+  background-color: rgba(250, 245, 232, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(194, 155, 114, 0.4);
+  border-radius: 20px;
   box-shadow: 
-    0 12px 36px -8px rgba(61, 53, 46, 0.12),
-    0 4px 12px -2px rgba(61, 53, 46, 0.06),
-    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    0 12px 36px -8px rgba(61, 46, 36, 0.12),
+    0 4px 12px -2px rgba(61, 46, 36, 0.06),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.ghibli-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 16px 44px -10px rgba(61, 53, 46, 0.16),
-    0 6px 16px -3px rgba(61, 53, 46, 0.08);
 }
 
 /* Washi Tape Corner Accents */
@@ -45,9 +39,9 @@ body {
   position: absolute;
   height: 22px;
   background-color: rgba(244, 212, 172, 0.78);
-  border-left: 2px dashed rgba(224, 122, 95, 0.4);
-  border-right: 2px dashed rgba(224, 122, 95, 0.4);
-  box-shadow: 0 2px 6px rgba(61, 53, 46, 0.08);
+  border-left: 2px dashed rgba(208, 104, 77, 0.4);
+  border-right: 2px dashed rgba(208, 104, 77, 0.4);
+  box-shadow: 0 2px 6px rgba(61, 46, 36, 0.08);
   pointer-events: none;
   z-index: 20;
 }
@@ -68,9 +62,9 @@ body {
 
 /* Botanical Stamp */
 .botanical-stamp {
-  border: 2px dashed rgba(122, 154, 126, 0.5);
+  border: 2px dashed rgba(107, 138, 104, 0.5);
   border-radius: 8px;
-  background-color: rgba(122, 154, 126, 0.12);
+  background-color: rgba(107, 138, 104, 0.12);
 }
 
 /* Floating animation for subtle cozy elements */
@@ -108,15 +102,16 @@ body {
 
 /* Custom Paper Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF6F0;
+  background: #FAF3E0;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D8C7B0;
+  background: #C29B72;
   border-radius: 4px;
+  border: 2px solid #FAF3E0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C2AF94;
+  background: #A67D56;
 }
