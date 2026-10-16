@@ -39,7 +39,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative min-h-[500vh] w-full bg-[#FAF6F0] selection:bg-[#F4ACB7]/50 selection:text-[#3D352E]">
+    <main className="relative min-h-[500vh] w-full overflow-x-clip bg-[#FAF6F0] selection:bg-[#F4ACB7]/50 selection:text-[#3D352E]">
       {/* 1. Global Interactive Click Particle Burst Engine */}
       <LeafParticleBurst />
 

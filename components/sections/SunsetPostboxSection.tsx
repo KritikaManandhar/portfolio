@@ -96,7 +96,7 @@ export default function SunsetPostboxSection() {
       id="postbox"
       className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 pt-14 pb-6 relative z-10"
     >
-      <ParchmentScroll maxWidth="max-w-[700px]" sealText="信">
+      <ParchmentScroll maxWidth="max-w-[840px]" sealText="信">
         {/* Section Header Tag */}
         <div className="flex items-center justify-between mb-3 pr-10">
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider text-[#D0684D] bg-[#D0684D]/15 border border-[#D0684D]/35 flex items-center gap-1.5 shadow-2xs">

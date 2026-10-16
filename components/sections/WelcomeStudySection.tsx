@@ -32,7 +32,7 @@ export default function WelcomeStudySection() {
       id="study"
       className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 pt-14 pb-6 relative z-10"
     >
-      <ParchmentScroll maxWidth="max-w-[620px]" sealText="吉">
+      <ParchmentScroll maxWidth="max-w-[700px]" sealText="吉">
         {/* Section Header Tag */}
         <div className="flex items-center justify-between mb-3 pr-10">
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider text-[#6B8A68] bg-[#6B8A68]/15 border border-[#6B8A68]/35 flex items-center gap-1.5 shadow-2xs">
