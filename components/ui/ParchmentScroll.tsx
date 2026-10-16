@@ -130,10 +130,16 @@ export default function ParchmentScroll({
 }: ParchmentScrollProps) {
   return (
     <div
-      className={`relative w-full ${maxWidth} mx-auto my-3 sm:my-5 transition-all duration-700 ease-in-out ${
+      style={
         isFolding
-          ? "scale-[0.22] -rotate-6 opacity-0 filter blur-[0.6px] pointer-events-none"
-          : "scale-100 rotate-0 opacity-100"
+          ? {
+              animation: "scroll-crumple 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards",
+              pointerEvents: "none",
+            }
+          : undefined
+      }
+      className={`relative w-full ${maxWidth} mx-auto my-3 sm:my-5 transition-all duration-500 ease-in-out ${
+        isFolding ? "pointer-events-none" : "scale-100 rotate-0 opacity-100"
       } ${className}`}
     >
       {/* 1. BRAIDED SILK HANGING CORD (Artisanal Hanging Loop) */}
@@ -223,6 +229,30 @@ export default function ParchmentScroll({
         {/* Top and Bottom Paper Curl Shadows */}
         <div className="absolute top-0 inset-x-0 h-6 bg-gradient-to-b from-[#4A240C]/28 via-[#4A240C]/08 to-transparent pointer-events-none z-10" />
         <div className="absolute bottom-0 inset-x-0 h-6 bg-gradient-to-t from-[#4A240C]/28 via-[#4A240C]/08 to-transparent pointer-events-none z-10" />
+
+        {/* Dynamic Crumple Paper Wrinkles Overlay (Flashes during crumpling) */}
+        {isFolding && (
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none z-20"
+            viewBox="0 0 400 400"
+            preserveAspectRatio="none"
+            fill="none"
+          >
+            <path
+              d="M 10 30 L 160 170 L 60 340 M 390 20 L 230 180 L 330 370 M 30 210 L 370 190 M 180 10 L 220 390 M 90 70 L 310 330"
+              stroke="#5A2E10"
+              strokeWidth="2.5"
+              strokeDasharray="6 3"
+              opacity="0.8"
+            />
+            <path
+              d="M 30 110 L 210 200 L 110 290 M 370 130 L 180 220 L 270 350"
+              stroke="#FFF8E7"
+              strokeWidth="1.8"
+              opacity="0.7"
+            />
+          </svg>
+        )}
 
         {/* Inner Content Area */}
         <div className="relative z-10 px-5 sm:px-8 md:px-10 py-5 sm:py-7">

@@ -116,23 +116,74 @@ body {
   background: #A67D56;
 }
 
-/* Origami Scroll Folding & Paper Airplane Soaring Animations */
-@keyframes origami-morph {
+/* Tactile Scroll Crumpling, Origami Paper Airplane Unfold & Soaring Animations */
+@keyframes scroll-crumple {
+  0% {
+    transform: scale(1) rotate(0deg) skew(0deg);
+    filter: drop-shadow(0 16px 36px rgba(40,18,6,0.3));
+    opacity: 1;
+  }
+  20% {
+    transform: scale(0.9, 0.94) rotate(-3deg) skewX(6deg);
+    filter: drop-shadow(0 14px 30px rgba(40,18,6,0.35)) contrast(110%);
+    opacity: 0.95;
+  }
+  45% {
+    transform: scale(0.65, 0.7) rotate(7deg) skewX(-9deg) skewY(5deg);
+    filter: drop-shadow(0 12px 24px rgba(40,18,6,0.4)) contrast(125%);
+    opacity: 0.85;
+  }
+  70% {
+    transform: scale(0.38, 0.42) rotate(-12deg) skewX(9deg);
+    filter: drop-shadow(0 8px 18px rgba(40,18,6,0.45));
+    opacity: 0.6;
+  }
+  90% {
+    transform: scale(0.18, 0.2) rotate(20deg);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(0.06, 0.06) rotate(30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes crumple-crunch {
   0% {
     opacity: 0;
-    transform: perspective(900px) scale(0.18) rotateX(72deg) rotateZ(-15deg);
+    transform: scale(0.15) rotate(-35deg);
   }
-  40% {
-    opacity: 0.95;
-    transform: perspective(900px) scale(0.72) rotateX(40deg) rotateZ(10deg);
+  35% {
+    opacity: 1;
+    transform: scale(1.15) rotate(14deg);
+  }
+  55% {
+    transform: scale(0.9) rotate(-10deg);
   }
   75% {
-    opacity: 1;
-    transform: perspective(900px) scale(1.08) rotateX(15deg) rotateZ(-4deg);
+    transform: scale(1.05) rotate(5deg);
   }
   100% {
     opacity: 1;
-    transform: perspective(900px) scale(1) rotateX(10deg) rotateZ(0deg);
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes plane-unfold {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.4) rotate(-22deg) rotateX(60deg);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2) rotate(8deg) rotateX(20deg);
+  }
+  75% {
+    transform: scale(0.96) rotate(-3deg) rotateX(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg) rotateX(12deg);
   }
 }
 
