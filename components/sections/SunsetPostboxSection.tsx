@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mailbox, Mail, CheckCircle } from "lucide-react";
+import { Mailbox, Mail, CheckCircle, AlertCircle } from "lucide-react";
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
 import { PaperPlaneVector } from "@/components/ui/VectorIcons";
@@ -17,6 +17,7 @@ export default function SunsetPostboxSection() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSent, setIsSent] = useState<boolean>(false);
   const [airplaneFlying, setAirplaneFlying] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -27,11 +28,12 @@ export default function SunsetPostboxSection() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
 
     setIsSubmitting(true);
+    setErrorMessage(null);
     triggerLeafBurst(window.innerWidth / 2, window.innerHeight / 2, true);
 
     if (chimeEngine) {
@@ -40,21 +42,52 @@ export default function SunsetPostboxSection() {
 
     setAirplaneFlying(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSent(true);
-      setAirplaneFlying(false);
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "5054fab6-bdf2-4bc8-bf97-c9d5ac5cad1b",
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject || `Postcard from ${formData.name}`,
+          message: formData.message,
+          from_name: "Portfolio Postbox",
+        }),
+      });
 
-      if (chimeEngine) {
-        chimeEngine.playCelebration();
+      const data = await response.json();
+
+      if (data.success) {
+        setTimeout(() => {
+          setIsSubmitting(false);
+          setIsSent(true);
+          setAirplaneFlying(false);
+
+          if (chimeEngine) {
+            chimeEngine.playCelebration();
+          }
+          triggerLeafBurst(window.innerWidth / 2, window.innerHeight * 0.4, false);
+        }, 1200);
+      } else {
+        setIsSubmitting(false);
+        setAirplaneFlying(false);
+        setErrorMessage(data.message || "Failed to send letter. Please try again.");
       }
-      triggerLeafBurst(window.innerWidth / 2, window.innerHeight * 0.4, false);
-    }, 1800);
+    } catch {
+      setIsSubmitting(false);
+      setAirplaneFlying(false);
+      setErrorMessage("Network error. Please check your connection or email directly.");
+    }
   };
 
   const resetForm = (e: React.MouseEvent) => {
     triggerLeafBurst(e.clientX, e.clientY, true);
     setIsSent(false);
+    setErrorMessage(null);
     setFormData({ name: "", email: "", subject: "", message: "" });
   };
 
@@ -67,7 +100,7 @@ export default function SunsetPostboxSection() {
         {/* Section Header Tag */}
         <div className="flex items-center justify-between mb-3 pr-10">
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider text-[#D0684D] bg-[#D0684D]/15 border border-[#D0684D]/35 flex items-center gap-1.5 shadow-2xs">
-            <Mailbox className="w-3 h-3 text-[#D0684D]" />
+            <Mailbox className="w-3.5 h-3.5 text-[#D0684D]" />
             <span>Section 05 • The Sunset Terrace &amp; Postbox</span>
           </span>
           <span className="text-[11px] text-[#5C381E]/70 font-serif italic">
@@ -147,7 +180,7 @@ export default function SunsetPostboxSection() {
                   Your Dispatch Has Taken Flight!
                 </h3>
                 <p className="text-xs text-[#3D2E24]/85 leading-relaxed max-w-sm mx-auto font-serif">
-                  Thank you, <span className="font-bold text-[#D0684D]">{formData.name}</span>. Your message was launched across the evening sky. I will respond to you shortly at <span className="font-mono text-[#6B8A68]">{formData.email}</span>.
+                  Thank you, <span className="font-bold text-[#D0684D]">{formData.name}</span>. Your message was delivered to my inbox and launched across the evening sky. I will respond to you shortly at <span className="font-mono text-[#6B8A68]">{formData.email}</span>.
                 </p>
                 <div className="pt-1">
                   <button
@@ -161,9 +194,18 @@ export default function SunsetPostboxSection() {
               </div>
             ) : (
               <form
+                action="https://api.web3forms.com/submit"
+                method="POST"
                 onSubmit={handleSubmit}
                 className="p-4 sm:p-5 rounded-lg bg-[#FFFDF7] border border-[#C29B72]/50 space-y-3 shadow-2xs relative"
               >
+                {/* Web3Forms Access Key */}
+                <input
+                  type="hidden"
+                  name="access_key"
+                  value="5054fab6-bdf2-4bc8-bf97-c9d5ac5cad1b"
+                />
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] font-serif font-semibold text-[#3D2E24] mb-0.5">
@@ -224,13 +266,20 @@ export default function SunsetPostboxSection() {
                   />
                 </div>
 
+                {errorMessage && (
+                  <div className="p-2 rounded-md bg-[#D0684D]/10 border border-[#D0684D]/30 flex items-center gap-1.5 text-[11px] text-[#D0684D] font-serif">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
                 <div className="pt-1">
                   <button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full py-2.5 rounded-md bg-[#D0684D] hover:bg-[#B9553C] active:scale-[0.99] text-[#FFFDF9] text-xs font-serif font-semibold transition-all shadow-xs border border-[#9A422D] flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
-                    <span>{isSubmitting ? "Folding Paper Plane..." : "Fold & Launch Paper Airplane"}</span>
+                    <span>{isSubmitting ? "Folding & Delivering Paper Plane..." : "Fold & Launch Paper Airplane"}</span>
                     <PaperPlaneVector className="w-3.5 h-3.5 text-white" />
                   </button>
                 </div>
