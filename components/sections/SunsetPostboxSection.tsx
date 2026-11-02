@@ -22,53 +22,37 @@ export default function SunsetPostboxSection() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [originPos, setOriginPos] = useState<{ x: number; y: number } | null>(null);
   const [unrollProgress, setUnrollProgress] = useState<number>(0);
-  const [hasUnrolled, setHasUnrolled] = useState<boolean>(false);
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
 
+  // Scroll-driven unroll/reroll tracking through Section 5's pinned track (matching study section)
   React.useEffect(() => {
     const handleScroll = () => {
       const section = sectionRef.current;
       if (!section) return;
 
       const rect = section.getBoundingClientRect();
-      const vh = window.innerHeight;
-
-      // Near bottom of document: guaranteed open and stable
-      const isAtBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 120;
-
-      if (isAtBottom) {
-        setHasUnrolled(true);
-        setUnrollProgress(1.0);
-        return;
-      }
-
-      const totalDistance = rect.height - vh;
+      const totalDistance = rect.height - window.innerHeight;
       if (totalDistance <= 0) {
-        setHasUnrolled(true);
         setUnrollProgress(1.0);
         return;
       }
 
-      // Begin unrolling earlier as section approaches viewport center
-      const enterOffset = vh * 0.75;
-      const scrolledIntoSection = enterOffset - rect.top;
-      const progress = Math.max(0, Math.min(1, scrolledIntoSection / (enterOffset + totalDistance * 0.35)));
+      const scrolledIntoSection = -rect.top;
+      const progress = Math.max(0, Math.min(1, scrolledIntoSection / totalDistance));
 
-      if (progress >= 0.85 || hasUnrolled) {
-        setHasUnrolled(true);
-        setUnrollProgress(1.0);
-      } else {
-        setUnrollProgress(progress);
-      }
+      // As user scrolls through the first 25% of Section 5:
+      // unroll smoothly grows from 0.0 to 1.0!
+      // Once progress >= 0.25, unroll stays 1.0 (fully open, stable, interactive)
+      // When user scrolls back up, unroll smoothly rerolls back into cylinder
+      const unroll = Math.max(0, Math.min(1, progress / 0.25));
+      setUnrollProgress(unroll);
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasUnrolled]);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -172,10 +156,9 @@ export default function SunsetPostboxSection() {
             maxWidth="max-w-[840px]"
             isFolding={isFolding}
             scrollAnimated
-            unrollProgress={hasUnrolled ? 1.0 : unrollProgress}
+            unrollProgress={unrollProgress}
             sealLabel="Section 05 • Sunset Postbox Folio"
             onUnroll={() => {
-              setHasUnrolled(true);
               setUnrollProgress(1.0);
               const section = sectionRef.current;
               if (section) {
@@ -288,7 +271,6 @@ export default function SunsetPostboxSection() {
                 method="POST"
                 onSubmit={handleSubmit}
                 onFocus={() => {
-                  setHasUnrolled(true);
                   setUnrollProgress(1.0);
                 }}
                 className="p-4 sm:p-5 rounded-lg bg-[#FFFDF7] border border-[#C29B72]/50 space-y-3 shadow-2xs relative"

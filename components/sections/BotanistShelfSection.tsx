@@ -379,12 +379,10 @@ export default function BotanistShelfSection() {
             return (
               <div
                 key={scroll.id}
-                className={`w-full transition-all duration-500 cubic-bezier(0.22, 1, 0.36, 1) ${
+                className={`w-full transition-opacity duration-300 ease-out ${
                   isActive
-                    ? "relative z-20 opacity-100 translate-x-0 scale-100 pointer-events-auto"
-                    : offset > 0
-                    ? "absolute inset-0 z-10 opacity-0 translate-x-12 scale-96 pointer-events-none"
-                    : "absolute inset-0 z-10 opacity-0 -translate-x-12 scale-96 pointer-events-none"
+                    ? "relative z-20 opacity-100 pointer-events-auto"
+                    : "absolute inset-0 z-10 opacity-0 pointer-events-none"
                 }`}
               >
                 <ParchmentScroll
