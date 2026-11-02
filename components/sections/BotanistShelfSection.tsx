@@ -164,14 +164,9 @@ export default function BotanistShelfSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeScrollIndex, setActiveScrollIndex] = useState<number>(0);
   const [sectionProgress, setSectionProgress] = useState<number>(0);
-  const [openedScrolls, setOpenedScrolls] = useState<{ [key: number]: boolean }>({
-    0: false,
-    1: false,
-    2: false,
-  });
   const [bloomed, setBloomed] = useState<boolean>(false);
 
-  // Synchronize multi-scroll stage & unroll progress with native window scroll
+  // Synchronize multi-scroll stage & dynamic unroll/reroll progress with window scroll
   useEffect(() => {
     const handleScroll = () => {
       const section = sectionRef.current;
@@ -180,7 +175,7 @@ export default function BotanistShelfSection() {
       const rect = section.getBoundingClientRect();
       const totalDistance = rect.height - window.innerHeight;
       if (totalDistance <= 0) {
-        setOpenedScrolls({ 0: true, 1: true, 2: true });
+        setSectionProgress(1.0);
         return;
       }
 
@@ -188,23 +183,9 @@ export default function BotanistShelfSection() {
       const progress = Math.max(0, Math.min(1, scrolledIntoSection / totalDistance));
       setSectionProgress(progress);
 
-      // Milestone unroll triggers:
-      // Scroll 0 unrolls during [0.00, 0.15]
-      // Scroll 1 unrolls during [0.33, 0.48]
-      // Scroll 2 unrolls during [0.67, 0.82]
-      if (progress >= 0.14) {
-        setOpenedScrolls((prev) => (prev[0] ? prev : { ...prev, 0: true }));
-      }
-      if (progress >= 0.47) {
-        setOpenedScrolls((prev) => (prev[1] ? prev : { ...prev, 1: true }));
-      }
-      if (progress >= 0.80) {
-        setOpenedScrolls((prev) => (prev[2] ? prev : { ...prev, 2: true }));
-      }
-
       // Active chapter selection across the 300vh track
       let nextIndex = 0;
-      if (progress >= 0.66) {
+      if (progress >= 0.67) {
         nextIndex = 2;
       } else if (progress >= 0.33) {
         nextIndex = 1;
@@ -231,33 +212,36 @@ export default function BotanistShelfSection() {
     };
   }, []);
 
-  // Compute scroll-driven unroll progress for each individual scroll
+  // Compute scroll-driven unroll/reroll progress for each individual scroll
+  // Scrolls unroll when scrolling down and smoothly reroll when scrolling back up (matching the study section)
   const getScrollUnrollProgress = (index: number): number => {
-    if (openedScrolls[index]) return 1.0;
-
     if (index === 0) {
-      return Math.max(0, Math.min(1, sectionProgress / 0.15));
+      // Unrolls during [0.00, 0.20], stays open during [0.20, 0.33]
+      // Rerolls during [0.20, 0.00] when scrolling up
+      return Math.max(0, Math.min(1, sectionProgress / 0.20));
     } else if (index === 1) {
+      // Unrolls during [0.33, 0.53], stays open during [0.53, 0.67]
+      // Rerolls during [0.53, 0.33] when scrolling up
       if (sectionProgress < 0.33) return 0.0;
-      return Math.max(0, Math.min(1, (sectionProgress - 0.33) / 0.15));
+      return Math.max(0, Math.min(1, (sectionProgress - 0.33) / 0.20));
     } else {
+      // Unrolls during [0.67, 0.87], stays open during [0.87, 1.00]
+      // Rerolls during [0.87, 0.67] when scrolling up
       if (sectionProgress < 0.67) return 0.0;
-      return Math.max(0, Math.min(1, (sectionProgress - 0.67) / 0.15));
+      return Math.max(0, Math.min(1, (sectionProgress - 0.67) / 0.20));
     }
   };
 
-  // Smoothly scroll window to target chapter milestone
+  // Smoothly scroll window to target chapter milestone plateau
   const scrollToScrollIndex = (targetIndex: number) => {
-    setOpenedScrolls((prev) => ({ ...prev, [targetIndex]: true }));
-
     const section = sectionRef.current;
     if (!section) return;
 
     const totalDistance = section.offsetHeight - window.innerHeight;
     if (totalDistance <= 0) return;
 
-    // Target midpoints: Chapter 0: 0.16, Chapter 1: 0.50, Chapter 2: 0.83
-    const progressTargets = [0.16, 0.50, 0.83];
+    // Target mid-plateaus: Chapter 0: 0.22, Chapter 1: 0.55, Chapter 2: 0.88
+    const progressTargets = [0.22, 0.55, 0.88];
     const targetY = section.offsetTop + progressTargets[targetIndex] * totalDistance;
 
     window.scrollTo({
@@ -272,10 +256,7 @@ export default function BotanistShelfSection() {
   };
 
   const handleUnrollScroll = (index: number) => {
-    setOpenedScrolls((prev) => ({ ...prev, [index]: true }));
-    if (chimeEngine) {
-      chimeEngine.playPaperRustle();
-    }
+    scrollToScrollIndex(index);
   };
 
   const handleSelectTab = (idx: number, e: React.MouseEvent) => {
