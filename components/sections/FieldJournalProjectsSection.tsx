@@ -17,7 +17,7 @@ import {
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
 import { GithubIcon } from "@/components/ui/VectorIcons";
-import ParchmentScroll from "@/components/ui/ParchmentScroll";
+import ParchmentScroll, { ScrollWoodVariant } from "@/components/ui/ParchmentScroll";
 
 interface ProjectDetails {
   id: string;
@@ -32,6 +32,8 @@ interface ProjectDetails {
   fieldNotes: string[];
   icon: React.ReactNode;
   accentColor: string;
+  woodVariant?: ScrollWoodVariant;
+  sealLabel: string;
   footerNote: string;
 }
 
@@ -55,6 +57,8 @@ const PROJECTS: ProjectDetails[] = [
     ],
     icon: <ShoppingBag className="w-4 h-4 text-[#D0684D]" />,
     accentColor: "border-[#D0684D]/40 bg-[#D0684D]/15 text-[#D0684D]",
+    woodVariant: "default",
+    sealLabel: "Folio 01 • E-Commerce Platform",
     footerNote:
       "Field Observation: Dynamic storefront deployment with relational database persistence",
   },
@@ -77,6 +81,8 @@ const PROJECTS: ProjectDetails[] = [
     ],
     icon: <Lock className="w-4 h-4 text-[#6B8A68]" />,
     accentColor: "border-[#6B8A68]/40 bg-[#6B8A68]/15 text-[#6B8A68]",
+    woodVariant: "default",
+    sealLabel: "Folio 02 • Student Security Portal",
     footerNote:
       "Field Observation: Padmakanya CSIT web security practicum with defensive auth routing",
   },
@@ -109,6 +115,8 @@ const PROJECTS: ProjectDetails[] = [
     ],
     icon: <Home className="w-4 h-4 text-[#3E6B89]" />,
     accentColor: "border-[#3E6B89]/40 bg-[#3E6B89]/15 text-[#3E6B89]",
+    woodVariant: "default",
+    sealLabel: "Folio 03 • Room Rental Management",
     footerNote:
       "Field Observation: Production-grade rental marketplace with Prisma relational PostgreSQL and Socket.io pipelines",
   },
@@ -118,11 +126,9 @@ export default function FieldJournalProjectsSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeScrollIndex, setActiveScrollIndex] = useState<number>(0);
   const [sectionProgress, setSectionProgress] = useState<number>(0);
-  const [unrollProgress, setUnrollProgress] = useState<number>(0);
-  const [hasUnrolled, setHasUnrolled] = useState<boolean>(false);
   const [activeModalProject, setActiveModalProject] = useState<ProjectDetails | null>(null);
 
-  // Synchronize carousel slide & unroll with native window scroll progress
+  // Synchronize multi-scroll stage & dynamic unroll/reroll progress with window scroll
   useEffect(() => {
     const handleScroll = () => {
       const section = sectionRef.current;
@@ -131,8 +137,7 @@ export default function FieldJournalProjectsSection() {
       const rect = section.getBoundingClientRect();
       const totalDistance = rect.height - window.innerHeight;
       if (totalDistance <= 0) {
-        setUnrollProgress(1.0);
-        setHasUnrolled(true);
+        setSectionProgress(1.0);
         return;
       }
 
@@ -140,20 +145,11 @@ export default function FieldJournalProjectsSection() {
       const progress = Math.max(0, Math.min(1, scrolledIntoSection / totalDistance));
       setSectionProgress(progress);
 
-      // Smooth unroll on entering section (first 18% of track)
-      const unroll = Math.max(0, Math.min(1, progress / 0.18));
-      if (unroll >= 0.88 || hasUnrolled) {
-        setHasUnrolled(true);
-        setUnrollProgress(1.0);
-      } else {
-        setUnrollProgress(unroll);
-      }
-
       // Active project chapter selection across the 300vh track
       let nextIndex = 0;
-      if (progress >= 0.65) {
+      if (progress >= 0.67) {
         nextIndex = 2;
-      } else if (progress >= 0.32) {
+      } else if (progress >= 0.33) {
         nextIndex = 1;
       } else {
         nextIndex = 0;
@@ -176,21 +172,38 @@ export default function FieldJournalProjectsSection() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [hasUnrolled]);
+  }, []);
 
-  // Smoothly scroll window to target project slide
+  // Compute scroll-driven unroll/reroll progress for each individual scroll
+  // Scrolls unroll when scrolling down and smoothly reroll when scrolling back up (matching study & shelf sections)
+  const getScrollUnrollProgress = (index: number): number => {
+    if (index === 0) {
+      // Unrolls during [0.00, 0.20], stays open during [0.20, 0.33]
+      // Rerolls during [0.20, 0.00] when scrolling up
+      return Math.max(0, Math.min(1, sectionProgress / 0.20));
+    } else if (index === 1) {
+      // Unrolls during [0.33, 0.53], stays open during [0.53, 0.67]
+      // Rerolls during [0.53, 0.33] when scrolling up
+      if (sectionProgress < 0.33) return 0.0;
+      return Math.max(0, Math.min(1, (sectionProgress - 0.33) / 0.20));
+    } else {
+      // Unrolls during [0.67, 0.87], stays open during [0.87, 1.00]
+      // Rerolls during [0.87, 0.67] when scrolling up
+      if (sectionProgress < 0.67) return 0.0;
+      return Math.max(0, Math.min(1, (sectionProgress - 0.67) / 0.20));
+    }
+  };
+
+  // Smoothly scroll window to target chapter milestone plateau
   const scrollToScrollIndex = (targetIndex: number) => {
-    setHasUnrolled(true);
-    setUnrollProgress(1.0);
-
     const section = sectionRef.current;
     if (!section) return;
 
     const totalDistance = section.offsetHeight - window.innerHeight;
     if (totalDistance <= 0) return;
 
-    // Target midpoints: Project 0: 0.18, Project 1: 0.50, Project 2: 0.82
-    const progressTargets = [0.18, 0.50, 0.82];
+    // Target mid-plateaus: Chapter 0: 0.22, Chapter 1: 0.55, Chapter 2: 0.88
+    const progressTargets = [0.22, 0.55, 0.88];
     const targetY = section.offsetTop + progressTargets[targetIndex] * totalDistance;
 
     window.scrollTo({
@@ -202,6 +215,10 @@ export default function FieldJournalProjectsSection() {
     if (chimeEngine) {
       chimeEngine.playPaperRustle();
     }
+  };
+
+  const handleUnrollScroll = (index: number) => {
+    scrollToScrollIndex(index);
   };
 
   const handleSelectTab = (idx: number, e: React.MouseEvent) => {
@@ -310,126 +327,127 @@ export default function FieldJournalProjectsSection() {
           </div>
         </div>
 
-        {/* Master Unified Field Journal Parchment Scroll */}
-        <div className="w-full max-w-[760px] mx-auto">
-          <ParchmentScroll
-            maxWidth="max-w-[760px]"
-            className="my-1 sm:my-1.5"
-            scrollAnimated
-            unrollProgress={hasUnrolled ? 1.0 : unrollProgress}
-            contentPadding="px-4 sm:px-6 md:px-7 py-3 sm:py-3.5"
-            sealLabel="Section 03 • The Field Journal Folio"
-            onUnroll={() => scrollToScrollIndex(0)}
-          >
-            {/* Sliding Project Manuscripts */}
-            <div className="relative overflow-hidden min-h-[340px] sm:min-h-[355px]">
-              {PROJECTS.map((proj, index) => {
-                const isCurrent = activeScrollIndex === index;
-                const offset = index - activeScrollIndex;
+        {/* 3 Distinct Physical Scrolls Stage */}
+        <div className="relative w-full max-w-[760px] mx-auto min-h-[440px] sm:min-h-[460px]">
+          {PROJECTS.map((proj, index) => {
+            const isActive = activeScrollIndex === index;
+            const offset = index - activeScrollIndex;
+            const scrollUnroll = getScrollUnrollProgress(index);
 
-                return (
-                  <div
-                    key={proj.id}
-                    className={`w-full transition-all duration-350 ease-out ${
-                      isCurrent
-                        ? "opacity-100 translate-x-0 relative z-10 pointer-events-auto"
-                        : offset > 0
-                        ? "opacity-0 translate-x-8 absolute inset-0 pointer-events-none"
-                        : "opacity-0 -translate-x-8 absolute inset-0 pointer-events-none"
-                    }`}
-                  >
-                    {/* Scroll Header */}
-                    <div className="flex items-center justify-between gap-2 mb-1.5 pr-10">
+            return (
+              <div
+                key={proj.id}
+                className={`w-full transition-all duration-500 cubic-bezier(0.22, 1, 0.36, 1) ${
+                  isActive
+                    ? "relative z-20 opacity-100 translate-x-0 scale-100 pointer-events-auto"
+                    : offset > 0
+                    ? "absolute inset-0 z-10 opacity-0 translate-x-12 scale-96 pointer-events-none"
+                    : "absolute inset-0 z-10 opacity-0 -translate-x-12 scale-96 pointer-events-none"
+                }`}
+              >
+                <ParchmentScroll
+                  maxWidth="max-w-[760px]"
+                  className="my-1 sm:my-1.5"
+                  scrollAnimated
+                  woodVariant={proj.woodVariant}
+                  unrollProgress={scrollUnroll}
+                  contentPadding="px-4 sm:px-6 md:px-7 py-3 sm:py-3.5"
+                  sealLabel={proj.sealLabel}
+                  onUnroll={() => handleUnrollScroll(index)}
+                >
+                  {/* Scroll Header */}
+                  <div className="flex items-center justify-between gap-2 mb-1.5 pr-10">
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-wider border flex items-center gap-1.5 shadow-2xs ${proj.accentColor}`}
+                    >
+                      {proj.icon}
+                      <span>{proj.badgeLabel}</span>
+                    </span>
+
+                    <span className="text-[11px] font-mono text-[#5C381E]/60 italic hidden sm:inline">
+                      Chapter III • Folio {proj.chapterNumber}
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl font-serif font-bold text-[#3D2E24] tracking-tight mb-0.5">
+                    {proj.title}
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#6B8A68] font-serif italic mb-1.5">
+                    {proj.subtitle}
+                  </p>
+
+                  <p className="text-xs sm:text-[12.5px] text-[#3D2E24]/85 leading-relaxed mb-2 font-serif">
+                    {proj.description}
+                  </p>
+
+                  {/* Tech Stack Badges */}
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {proj.tags.map((t) => (
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-wider border flex items-center gap-1.5 shadow-2xs ${proj.accentColor}`}
+                        key={t}
+                        onClick={(e) =>
+                          triggerLeafBurst(e.clientX, e.clientY, true)
+                        }
+                        className="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[#FFFDF7] border border-[#C29B72]/50 text-[#3D2E24] shadow-2xs cursor-pointer hover:border-[#6B8A68] transition-all"
                       >
-                        {proj.icon}
-                        <span>{proj.badgeLabel}</span>
+                        {t}
                       </span>
+                    ))}
+                  </div>
 
-                      <span className="text-[11px] font-mono text-[#5C381E]/60 italic hidden sm:inline">
-                        Chapter III • Folio {proj.chapterNumber}
-                      </span>
-                    </div>
-
-                    <h3 className="text-lg sm:text-xl font-serif font-bold text-[#3D2E24] tracking-tight mb-0.5">
-                      {proj.title}
-                    </h3>
-                    <p className="text-xs sm:text-[13px] text-[#6B8A68] font-serif italic mb-1.5">
-                      {proj.subtitle}
-                    </p>
-
-                    <p className="text-xs sm:text-[12.5px] text-[#3D2E24]/85 leading-relaxed mb-2 font-serif">
-                      {proj.description}
-                    </p>
-
-                    {/* Tech Stack Badges */}
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {proj.tags.map((t) => (
-                        <span
-                          key={t}
-                          onClick={(e) =>
-                            triggerLeafBurst(e.clientX, e.clientY, true)
-                          }
-                          className="px-2 py-0.5 rounded-sm text-[10px] font-mono bg-[#FFFDF7] border border-[#C29B72]/50 text-[#3D2E24] shadow-2xs cursor-pointer hover:border-[#6B8A68] transition-all"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Architectural Field Highlights: Balanced 2x2 Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mb-2">
-                      {proj.fieldNotes.slice(0, 4).map((note, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-start gap-1.5 p-1.5 sm:p-2 rounded-md bg-[#FFFDF7] border border-[#C29B72]/40 text-[10.5px] sm:text-[11px] text-[#3D2E24] font-serif shadow-2xs"
-                        >
-                          <ShieldCheck className="w-3.5 h-3.5 text-[#6B8A68] mt-0.5 shrink-0" />
-                          <span className="leading-snug">{note}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Actions & Botanical Observation Footer */}
-                    <div className="pt-2 border-t border-[#C29B72]/40 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-[#5C381E]/70 font-serif">
-                      <button
-                        type="button"
-                        onClick={(e) => openFieldNotes(e, proj)}
-                        className="font-semibold text-[#6B8A68] hover:text-[#4E6B4B] transition-colors flex items-center gap-1 cursor-pointer underline underline-offset-4"
+                  {/* Architectural Field Highlights: Balanced 2x2 Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mb-2">
+                    {proj.fieldNotes.slice(0, 4).map((note, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-start gap-1.5 p-1.5 sm:p-2 rounded-md bg-[#FFFDF7] border border-[#C29B72]/40 text-[10.5px] sm:text-[11px] text-[#3D2E24] font-serif shadow-2xs"
                       >
-                        <Search className="w-3 h-3" />
-                        <span>Inspect Complete Specs</span>
-                      </button>
-
-                      <div className="flex items-center gap-2">
-                        <a
-                          href={proj.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) =>
-                            triggerLeafBurst(e.clientX, e.clientY, true)
-                          }
-                          className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-md bg-[#3D2E24] hover:bg-[#2A1E16] text-[#FAF6EE] text-[11px] font-medium transition-all shadow-xs flex items-center gap-1.5 border border-[#2B180A]"
-                        >
-                          <GithubIcon className="w-3 h-3" />
-                          <span>Source Repository &rarr;</span>
-                        </a>
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#6B8A68] mt-0.5 shrink-0" />
+                        <span className="leading-snug">{note}</span>
                       </div>
+                    ))}
+                  </div>
+
+                  {/* Actions & Botanical Observation Footer */}
+                  <div className="pt-2 border-t border-[#C29B72]/40 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-[#5C381E]/70 font-serif">
+                    <button
+                      type="button"
+                      onClick={(e) => openFieldNotes(e, proj)}
+                      className="font-semibold text-[#6B8A68] hover:text-[#4E6B4B] transition-colors flex items-center gap-1 cursor-pointer underline underline-offset-4"
+                    >
+                      <Search className="w-3 h-3" />
+                      <span>Inspect Complete Specs</span>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={proj.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) =>
+                          triggerLeafBurst(e.clientX, e.clientY, true)
+                        }
+                        className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-md bg-[#3D2E24] hover:bg-[#2A1E16] text-[#FAF6EE] text-[11px] font-medium transition-all shadow-xs flex items-center gap-1.5 border border-[#2B180A]"
+                      >
+                        <GithubIcon className="w-3 h-3" />
+                        <span>Source Repository &rarr;</span>
+                      </a>
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          </ParchmentScroll>
+                </ParchmentScroll>
+              </div>
+            );
+          })}
         </div>
 
         {/* Bottom Interactive Scroll Hint */}
         <div className="flex items-center justify-center gap-1.5 mt-1 sm:mt-1.5 text-[10px] sm:text-[11px] font-serif text-[#5C381E]/75 select-none pointer-events-none">
           <span className="w-1.5 h-1.5 rounded-full bg-[#6B8A68] animate-ping" />
           <span>
-            {activeScrollIndex < PROJECTS.length - 1
-              ? `Scroll down to examine Folio ${activeScrollIndex + 2}`
+            {activeScrollIndex === 0
+              ? "Scroll down to unfurl Folio 02 • Student Portal"
+              : activeScrollIndex === 1
+              ? "Scroll down to unfurl Folio 03 • Room Rental"
               : "Scroll down to enter The Little World"}
           </span>
           <ChevronDown className="w-3 h-3 text-[#6B8A68] animate-bounce" />
