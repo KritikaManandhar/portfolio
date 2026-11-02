@@ -33,12 +33,8 @@ interface ShelfScrollData {
   subtitle: string;
   icon: React.ReactNode;
   accentColor: string;
-  woodVariant: ScrollWoodVariant;
+  woodVariant?: ScrollWoodVariant;
   sealLabel: string;
-  tabColor: {
-    active: string;
-    inactive: string;
-  };
   skills: SkillItem[];
   footerNote: string;
 }
@@ -54,13 +50,8 @@ const SHELF_SCROLLS: ShelfScrollData[] = [
       "Foundational software logic, object-oriented paradigms, and system compilation.",
     icon: <Code className="w-4 h-4 text-[#6B8A68]" />,
     accentColor: "border-[#6B8A68]/40 bg-[#6B8A68]/15 text-[#6B8A68]",
-    woodVariant: "sage",
+    woodVariant: "default",
     sealLabel: "Folio 01 • Programming & Algorithms",
-    tabColor: {
-      active: "bg-[#4A6947] text-white border-[#3B5439] shadow-xs scale-102 font-medium",
-      inactive:
-        "bg-[#FAF5E8]/90 text-[#3B5439] border-[#6B8A68]/40 hover:bg-[#EFF5EC] hover:border-[#4A6947]",
-    },
     skills: [
       {
         name: "JavaScript",
@@ -101,13 +92,8 @@ const SHELF_SCROLLS: ShelfScrollData[] = [
       "Semantic web markup, responsive UI layouts, relational schemas, and ACID transactions.",
     icon: <Database className="w-4 h-4 text-[#D0684D]" />,
     accentColor: "border-[#D0684D]/40 bg-[#D0684D]/15 text-[#D0684D]",
-    woodVariant: "amber",
+    woodVariant: "default",
     sealLabel: "Folio 02 • Web Architectures & Database Systems",
-    tabColor: {
-      active: "bg-[#C25B38] text-white border-[#9E4424] shadow-xs scale-102 font-medium",
-      inactive:
-        "bg-[#FAF5E8]/90 text-[#9E4424] border-[#D0684D]/40 hover:bg-[#FBF0E8] hover:border-[#C25B38]",
-    },
     skills: [
       {
         name: "HTML5",
@@ -141,15 +127,10 @@ const SHELF_SCROLLS: ShelfScrollData[] = [
     title: "Design Systems & Professional Web Training",
     subtitle:
       "Interactive wireframing, design systems, visual branding, and accredited professional training.",
-    icon: <Palette className="w-4 h-4 text-[#8C587A]" />,
-    accentColor: "border-[#945280]/40 bg-[#945280]/15 text-[#8C587A]",
-    woodVariant: "indigo",
+    icon: <Palette className="w-4 h-4 text-[#8C5835]" />,
+    accentColor: "border-[#C29B72]/50 bg-[#C29B72]/20 text-[#8C5835]",
+    woodVariant: "default",
     sealLabel: "Folio 03 • Design Systems & Certified Training",
-    tabColor: {
-      active: "bg-[#7A3D68] text-white border-[#5D244D] shadow-xs scale-102 font-medium",
-      inactive:
-        "bg-[#FAF5E8]/90 text-[#7A3D68] border-[#945280]/40 hover:bg-[#F9EFF5] hover:border-[#7A3D68]",
-    },
     skills: [
       {
         name: "Figma",
@@ -365,7 +346,9 @@ export default function BotanistShelfSection() {
                   type="button"
                   onClick={(e) => handleSelectTab(idx, e)}
                   className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-serif transition-all flex items-center gap-1.5 border cursor-pointer select-none ${
-                    isActive ? s.tabColor.active : s.tabColor.inactive
+                    isActive
+                      ? "bg-[#6B8A68] text-white border-[#536E50] shadow-xs scale-102 font-medium"
+                      : "bg-[#FAF5E8]/90 text-[#5C381E]/75 border-[#C29B72]/45 hover:bg-[#F3ECE1] hover:text-[#D0684D]"
                   }`}
                 >
                   <span className="text-[10px] font-mono opacity-80">
@@ -491,7 +474,7 @@ export default function BotanistShelfSection() {
                   </div>
 
                   {/* Botanical Observation Footer */}
-                  <div className="pt-2 border-t border-[#C2986E]/40 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-[11px] text-[#5C381E]/70 font-serif italic">
+                  <div className="pt-2 border-t border-[#C29B72]/40 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-[11px] text-[#5C381E]/70 font-serif italic">
                     <span>{scroll.footerNote}</span>
                     <span className="text-[#6B8A68] font-mono">
                       Scroll {scroll.chapterNumber} of 03
