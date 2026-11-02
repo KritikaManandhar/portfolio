@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Sparkles, ChevronDown } from "lucide-react";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
 
+export type ScrollWoodVariant = "default" | "sage" | "amber" | "indigo";
+
 export interface ParchmentScrollProps {
   children: React.ReactNode;
   maxWidth?: string; // e.g. "max-w-2xl", "max-w-[760px]"
@@ -13,11 +15,175 @@ export interface ParchmentScrollProps {
   unrollProgress?: number; // Optional 0.0 to 1.0 progress value override
   sealLabel?: string; // Optional label displayed on the rolled seal when closed
   contentPadding?: string; // Custom padding for inner sheet (e.g. for compact world view)
+  woodVariant?: ScrollWoodVariant; // Custom aesthetic theme for distinct physical scrolls
   onUnroll?: () => void;
 }
 
+const FINIAL_PALETTES = {
+  default: {
+    woodStops: [
+      { offset: "0%", color: "#482310" },
+      { offset: "16%", color: "#8A4820" },
+      { offset: "38%", color: "#D88D4E" },
+      { offset: "65%", color: "#783A16" },
+      { offset: "100%", color: "#2E1306" },
+    ],
+    brassStops: [
+      { offset: "0%", color: "#806222" },
+      { offset: "28%", color: "#F4D680" },
+      { offset: "60%", color: "#C89E3E" },
+      { offset: "100%", color: "#523B10" },
+    ],
+    outline: "#361708",
+    collarStroke: "#4A340C",
+    sheenStroke: "#F5CA7B",
+    creaseStroke: "#381806",
+  },
+  sage: {
+    woodStops: [
+      { offset: "0%", color: "#1F3320" },
+      { offset: "16%", color: "#3B5A3C" },
+      { offset: "38%", color: "#6B8A68" },
+      { offset: "65%", color: "#2E4730" },
+      { offset: "100%", color: "#142416" },
+    ],
+    brassStops: [
+      { offset: "0%", color: "#4A5E3F" },
+      { offset: "28%", color: "#A7BD9D" },
+      { offset: "60%", color: "#738C67" },
+      { offset: "100%", color: "#2E3B27" },
+    ],
+    outline: "#162818",
+    collarStroke: "#273822",
+    sheenStroke: "#B8D4AD",
+    creaseStroke: "#1E301F",
+  },
+  amber: {
+    woodStops: [
+      { offset: "0%", color: "#4A1E12" },
+      { offset: "16%", color: "#9E4424" },
+      { offset: "38%", color: "#E07A4A" },
+      { offset: "65%", color: "#8B3518" },
+      { offset: "100%", color: "#331208" },
+    ],
+    brassStops: [
+      { offset: "0%", color: "#8A5E1E" },
+      { offset: "28%", color: "#FBD36E" },
+      { offset: "60%", color: "#D99B26" },
+      { offset: "100%", color: "#5E3D0D" },
+    ],
+    outline: "#381308",
+    collarStroke: "#4E320A",
+    sheenStroke: "#FEDB8B",
+    creaseStroke: "#3A160A",
+  },
+  indigo: {
+    woodStops: [
+      { offset: "0%", color: "#381730" },
+      { offset: "16%", color: "#6E2E5E" },
+      { offset: "38%", color: "#B05896" },
+      { offset: "65%", color: "#5A224C" },
+      { offset: "100%", color: "#250D20" },
+    ],
+    brassStops: [
+      { offset: "0%", color: "#8F6E28" },
+      { offset: "28%", color: "#FFE58A" },
+      { offset: "60%", color: "#DDB54A" },
+      { offset: "100%", color: "#634812" },
+    ],
+    outline: "#2A0E24",
+    collarStroke: "#4F390D",
+    sheenStroke: "#FFEA9F",
+    creaseStroke: "#2F1129",
+  },
+};
+
+const VARIANT_CYLINDER_STYLES = {
+  default: {
+    topGrad:
+      "linear-gradient(180deg, #A87648 0%, #D8A976 12%, #FBF2DE 32%, #EED5AA 55%, #D4A874 74%, #8D5428 92%, #522D13 100%)",
+    bottomGrad:
+      "linear-gradient(180deg, #7A421C 0%, #C89966 14%, #FBF2DE 38%, #EED2A2 62%, #C28D56 80%, #7E451E 94%, #42200A 100%)",
+    borderTopBottom: "border-[#8A5228]/85",
+    creaseColor: "bg-[#6E3C18]/60",
+    bottomCreaseColor: "bg-[#5E2F10]/50",
+    cordColor: "#9E6536",
+    cordBeadOuter: "#E4BA68",
+    cordBeadInner: "#FAF3E0",
+    cordKnots: "#6E4018",
+    sheetBorder: "border-[#C2986E]/75",
+    sheetWash:
+      "linear-gradient(180deg, #F4E7CA 0%, #FAF5E8 4%, #F8F1DF 48%, #F7EEDA 52%, #FAF5E8 96%, #EDE0BE 100%)",
+    sealBorder: "border-[#B99A60]/85",
+    sealText: "text-[#5C381E]",
+    sealIcon: "text-[#B99A60]",
+  },
+  sage: {
+    topGrad:
+      "linear-gradient(180deg, #4A6349 0%, #769675 12%, #F5F7EE 32%, #DCE5D8 55%, #7A9B79 74%, #3B533A 92%, #1C2B1B 100%)",
+    bottomGrad:
+      "linear-gradient(180deg, #3A5239 0%, #688867 14%, #F5F7EE 38%, #D5E0D1 62%, #638362 80%, #30462F 94%, #182517 100%)",
+    borderTopBottom: "border-[#4A6349]/85",
+    creaseColor: "bg-[#2D422C]/60",
+    bottomCreaseColor: "bg-[#253825]/50",
+    cordColor: "#567A54",
+    cordBeadOuter: "#A3BFA0",
+    cordBeadInner: "#F3F7F2",
+    cordKnots: "#2E472D",
+    sheetBorder: "border-[#6B8A68]/70",
+    sheetWash:
+      "linear-gradient(180deg, #EFF5EC 0%, #FAFBF7 4%, #F3F7F0 48%, #F0F5ED 52%, #FAFBF7 96%, #E3EBE0 100%)",
+    sealBorder: "border-[#6B8A68]/85",
+    sealText: "text-[#2D452B]",
+    sealIcon: "text-[#6B8A68]",
+  },
+  amber: {
+    topGrad:
+      "linear-gradient(180deg, #B25A38 0%, #E28864 12%, #FFF4ED 32%, #FAD9C8 55%, #DC7752 74%, #943A1C 92%, #551E0C 100%)",
+    bottomGrad:
+      "linear-gradient(180deg, #8C371B 0%, #D46A42 14%, #FFF4ED 38%, #F5CEBA 62%, #C75B34 80%, #7D2D13 94%, #461506 100%)",
+    borderTopBottom: "border-[#9E4424]/85",
+    creaseColor: "bg-[#662612]/60",
+    bottomCreaseColor: "bg-[#551E0C]/50",
+    cordColor: "#B25032",
+    cordBeadOuter: "#F39E79",
+    cordBeadInner: "#FFF6F0",
+    cordKnots: "#6B2713",
+    sheetBorder: "border-[#D0684D]/70",
+    sheetWash:
+      "linear-gradient(180deg, #FBF0E8 0%, #FFF9F5 4%, #FAF2EB 48%, #F8EFE6 52%, #FFF9F5 96%, #F5E3D6 100%)",
+    sealBorder: "border-[#D0684D]/85",
+    sealText: "text-[#6B2713]",
+    sealIcon: "text-[#D0684D]",
+  },
+  indigo: {
+    topGrad:
+      "linear-gradient(180deg, #7A3D68 0%, #B2659B 12%, #FDF4FA 32%, #F5D3EA 55%, #A85690 74%, #632B52 92%, #38122D 100%)",
+    bottomGrad:
+      "linear-gradient(180deg, #5D244D 0%, #9E4D85 14%, #FDF4FA 38%, #ECC3DF 62%, #94417B 80%, #541D44 94%, #2E0B24 100%)",
+    borderTopBottom: "border-[#7A3D68]/85",
+    creaseColor: "bg-[#4A1A3E]/60",
+    bottomCreaseColor: "bg-[#3D1432]/50",
+    cordColor: "#8A3D72",
+    cordBeadOuter: "#E297C9",
+    cordBeadInner: "#FDF4FA",
+    cordKnots: "#4F1B41",
+    sheetBorder: "border-[#945280]/70",
+    sheetWash:
+      "linear-gradient(180deg, #F9EFF5 0%, #FCF8FA 4%, #F7EEF4 48%, #F5EAF2 52%, #FCF8FA 96%, #F1DFEC 100%)",
+    sealBorder: "border-[#945280]/85",
+    sealText: "text-[#541D44]",
+    sealIcon: "text-[#945280]",
+  },
+};
+
 // Hand-Painted Turned Wooden Finial (Left)
-function ScrollFinialLeft() {
+function ScrollFinialLeft({ woodVariant = "default" }: { woodVariant?: ScrollWoodVariant }) {
+  const p = FINIAL_PALETTES[woodVariant] || FINIAL_PALETTES.default;
+  const gradId = `finialWoodGradL-${woodVariant}`;
+  const collarId = `brassCollarGradL-${woodVariant}`;
+  const highlightId = `knobHighlightGradL-${woodVariant}`;
+
   return (
     <svg
       viewBox="0 0 76 56"
@@ -25,25 +191,19 @@ function ScrollFinialLeft() {
       fill="none"
     >
       <defs>
-        {/* Polished Lacquered Rosewood / Walnut Wood Gradient */}
-        <linearGradient id="finialWoodGradL" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#482310" />
-          <stop offset="16%" stopColor="#8A4820" />
-          <stop offset="38%" stopColor="#D88D4E" />
-          <stop offset="65%" stopColor="#783A16" />
-          <stop offset="100%" stopColor="#2E1306" />
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="0%" y2="100%">
+          {p.woodStops.map((s, i) => (
+            <stop key={i} offset={s.offset} stopColor={s.color} />
+          ))}
         </linearGradient>
 
-        {/* Polished Antique Brass Inlay Collar */}
-        <linearGradient id="brassCollarGradL" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#806222" />
-          <stop offset="28%" stopColor="#F4D680" />
-          <stop offset="60%" stopColor="#C89E3E" />
-          <stop offset="100%" stopColor="#523B10" />
+        <linearGradient id={collarId} x1="0%" y1="0%" x2="0%" y2="100%">
+          {p.brassStops.map((s, i) => (
+            <stop key={i} offset={s.offset} stopColor={s.color} />
+          ))}
         </linearGradient>
 
-        {/* Spherical Knob Radial Specular Reflection */}
-        <radialGradient id="knobHighlightGradL" cx="35%" cy="30%" r="65%">
+        <radialGradient id={highlightId} cx="35%" cy="30%" r="65%">
           <stop offset="0%" stopColor="rgba(255,255,255,0.65)" />
           <stop offset="45%" stopColor="rgba(255,255,255,0.12)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
@@ -73,8 +233,8 @@ function ScrollFinialLeft() {
            C 29 41, 26 45, 19 45
            C 10 45, 3 39, 3 28
            Z"
-        fill="url(#finialWoodGradL)"
-        stroke="#361708"
+        fill={`url(#${gradId})`}
+        stroke={p.outline}
         strokeWidth="1.3"
         strokeLinejoin="round"
       />
@@ -86,29 +246,29 @@ function ScrollFinialLeft() {
         width="4.5"
         height="23"
         rx="0.8"
-        fill="url(#brassCollarGradL)"
-        stroke="#4A340C"
+        fill={`url(#${collarId})`}
+        stroke={p.collarStroke}
         strokeWidth="1"
       />
 
       {/* 3. Flared Collar Disc Concentric Turned Highlights */}
       <path
         d="M 55 4 C 57 18, 57 38, 55 52"
-        stroke="#F5CA7B"
+        stroke={p.sheenStroke}
         strokeWidth="1.2"
         fill="none"
         opacity="0.65"
       />
       <path
         d="M 61 7 C 62 19, 62 37, 61 49"
-        stroke="#381806"
+        stroke={p.creaseStroke}
         strokeWidth="1.2"
         fill="none"
         opacity="0.8"
       />
 
       {/* 4. Spherical 3D Knob Specular Gloss Highlights */}
-      <ellipse cx="17" cy="20" rx="8" ry="5" fill="url(#knobHighlightGradL)" />
+      <ellipse cx="17" cy="20" rx="8" ry="5" fill={`url(#${highlightId})`} />
       <path
         d="M 8 23 C 11 16, 17 14, 23 15"
         stroke="rgba(255,255,255,0.48)"
@@ -121,10 +281,10 @@ function ScrollFinialLeft() {
 }
 
 // Hand-Painted Turned Wooden Finial (Right - Exact Mirror)
-function ScrollFinialRight() {
+function ScrollFinialRight({ woodVariant = "default" }: { woodVariant?: ScrollWoodVariant }) {
   return (
     <div className="-scale-x-100 flex items-center">
-      <ScrollFinialLeft />
+      <ScrollFinialLeft woodVariant={woodVariant} />
     </div>
   );
 }
@@ -138,6 +298,7 @@ export default function ParchmentScroll({
   unrollProgress,
   sealLabel,
   contentPadding = "px-5 sm:px-8 md:px-10 py-5 sm:py-7",
+  woodVariant = "default",
   onUnroll,
 }: ParchmentScrollProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -251,6 +412,8 @@ export default function ParchmentScroll({
     ? 1
     : Math.max(0, (effectiveProgress - 0.10) / 0.90);
 
+  const styles = VARIANT_CYLINDER_STYLES[woodVariant] || VARIANT_CYLINDER_STYLES.default;
+
   return (
     <div
       ref={containerRef}
@@ -283,21 +446,21 @@ export default function ParchmentScroll({
       >
         <svg
           viewBox="0 0 160 28"
-          className="w-24 sm:w-32 h-5 sm:h-6 text-[#9E6536] drop-shadow-[0_2px_4px_rgba(60,30,10,0.25)]"
+          className="w-24 sm:w-32 h-5 sm:h-6 drop-shadow-[0_2px_4px_rgba(60,30,10,0.25)]"
           fill="none"
           stroke="currentColor"
           strokeLinecap="round"
         >
           <path
             d="M 18 26 C 50 10, 70 3, 80 3 C 90 3, 110 10, 142 26"
-            stroke="#9E6536"
+            stroke={styles.cordColor}
             strokeWidth="2"
             strokeDasharray="4 2"
           />
-          <circle cx="80" cy="4" r="3.5" fill="#E4BA68" stroke="#5A3A16" strokeWidth="1.2" />
-          <circle cx="80" cy="4" r="1.5" fill="#FAF3E0" />
-          <circle cx="26" cy="22" r="2" fill="#6E4018" />
-          <circle cx="134" cy="22" r="2" fill="#6E4018" />
+          <circle cx="80" cy="4" r="3.5" fill={styles.cordBeadOuter} stroke="#5A3A16" strokeWidth="1.2" />
+          <circle cx="80" cy="4" r="1.5" fill={styles.cordBeadInner} />
+          <circle cx="26" cy="22" r="2" fill={styles.cordKnots} />
+          <circle cx="134" cy="22" r="2" fill={styles.cordKnots} />
         </svg>
       </div>
 
@@ -309,23 +472,22 @@ export default function ParchmentScroll({
             : "translate-y-0 rotate-0 opacity-100 scale-100"
         }`}
       >
-        <ScrollFinialLeft />
+        <ScrollFinialLeft woodVariant={woodVariant} />
 
         {/* Master Rolled Parchment Cylinder */}
-        <div className="grow h-5 sm:h-7 md:h-8 relative overflow-hidden rounded-[2px] border-y border-[#8A5228]/85 shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]">
+        <div className={`grow h-5 sm:h-7 md:h-8 relative overflow-hidden rounded-[2px] border-y ${styles.borderTopBottom} shadow-[inset_0_1px_2px_rgba(255,255,255,0.4)]`}>
           {/* Base Cylindrical Gradient */}
           <div
             className="absolute inset-0"
             style={{
-              background:
-                "linear-gradient(180deg, #A87648 0%, #D8A976 12%, #FBF2DE 32%, #EED5AA 55%, #D4A874 74%, #8D5428 92%, #522D13 100%)",
+              background: styles.topGrad,
             }}
           />
           {/* Paper Wrap Crease Line */}
-          <div className="absolute top-[68%] inset-x-0 h-[1.5px] bg-[#6E3C18]/60 shadow-[0_1px_1px_rgba(255,255,255,0.35)]" />
+          <div className={`absolute top-[68%] inset-x-0 h-[1.5px] ${styles.creaseColor} shadow-[0_1px_1px_rgba(255,255,255,0.35)]`} />
           {/* Cylindrical Top Specular Light Sheen */}
           <div className="absolute top-[2px] inset-x-0 h-[2.5px] bg-white/45 blur-[0.5px]" />
-          {/* Fine Paper Fiber Striations */}
+          {/* Fine Paper Striations */}
           <div
             className="absolute inset-0 opacity-15 pointer-events-none"
             style={{
@@ -335,7 +497,7 @@ export default function ParchmentScroll({
           />
         </div>
 
-        <ScrollFinialRight />
+        <ScrollFinialRight woodVariant={woodVariant} />
       </div>
 
       {/* ROLLED FOLIO SEAL BUTTON (Visible when scroll is rolled or opening) */}
@@ -347,12 +509,12 @@ export default function ParchmentScroll({
           <button
             type="button"
             onClick={handleOpenFolio}
-            className="px-3.5 py-1.5 rounded-full bg-[#FAF4E6]/95 hover:bg-[#FFFDF7] border-2 border-[#B99A60]/85 shadow-[0_4px_14px_rgba(40,18,8,0.28)] text-[#5C381E] text-xs font-serif font-semibold flex items-center gap-1.5 transition-all cursor-pointer hover:scale-105 active:scale-95"
+            className={`px-3.5 py-1.5 rounded-full bg-[#FAF4E6]/95 hover:bg-[#FFFDF7] border-2 ${styles.sealBorder} shadow-[0_4px_14px_rgba(40,18,8,0.28)] ${styles.sealText} text-xs font-serif font-semibold flex items-center gap-1.5 transition-all cursor-pointer hover:scale-105 active:scale-95`}
             title="Unfurl this scroll folio"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#B99A60]" />
+            <Sparkles className={`w-3.5 h-3.5 ${styles.sealIcon}`} />
             <span>{sealLabel || "Scroll or Click to Unfurl Folio"}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-[#B99A60] animate-bounce" />
+            <ChevronDown className={`w-3.5 h-3.5 ${styles.sealIcon} animate-bounce`} />
           </button>
         </div>
       )}
@@ -372,7 +534,7 @@ export default function ParchmentScroll({
             ? "none"
             : "height 0.12s cubic-bezier(0.25, 1, 0.5, 1)",
         }}
-        className={`relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 border-[#C2986E]/75 ${
+        className={`relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 ${styles.sheetBorder} ${
           isFullyOpen ? "overflow-visible" : "overflow-hidden"
         }`}
       >
@@ -380,8 +542,7 @@ export default function ParchmentScroll({
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              "linear-gradient(180deg, #F4E7CA 0%, #FAF5E8 4%, #F8F1DF 48%, #F7EEDA 52%, #FAF5E8 96%, #EDE0BE 100%)",
+            background: styles.sheetWash,
           }}
         />
 
@@ -474,20 +635,19 @@ export default function ParchmentScroll({
             : "transform 0.12s ease-out",
         }}
       >
-        <ScrollFinialLeft />
+        <ScrollFinialLeft woodVariant={woodVariant} />
 
         {/* Master Rolled Parchment Cylinder */}
-        <div className="grow h-5 sm:h-7 md:h-8 relative overflow-hidden rounded-[2px] border-y border-[#8A5228]/85 shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)]">
+        <div className={`grow h-5 sm:h-7 md:h-8 relative overflow-hidden rounded-[2px] border-y ${styles.borderTopBottom} shadow-[inset_0_1px_2px_rgba(255,255,255,0.3)]`}>
           {/* Base Bottom Cylinder Rolled Paper Gradient */}
           <div
             className="absolute inset-0"
             style={{
-              background:
-                "linear-gradient(180deg, #7A421C 0%, #C89966 14%, #FBF2DE 38%, #EED2A2 62%, #C28D56 80%, #7E451E 94%, #42200A 100%)",
+              background: styles.bottomGrad,
             }}
           />
           {/* Paper Hem Wrap Crease */}
-          <div className="absolute top-[28%] inset-x-0 h-[1.5px] bg-[#5E2F10]/50 shadow-[0_1px_1px_rgba(255,255,255,0.3)]" />
+          <div className={`absolute top-[28%] inset-x-0 h-[1.5px] ${styles.bottomCreaseColor} shadow-[0_1px_1px_rgba(255,255,255,0.3)]`} />
           {/* Cylindrical Specular Light Sheen */}
           <div className="absolute top-[34%] inset-x-0 h-[2.5px] bg-white/40 blur-[0.5px]" />
           {/* Fine Paper Striations */}
@@ -500,7 +660,7 @@ export default function ParchmentScroll({
           />
         </div>
 
-        <ScrollFinialRight />
+        <ScrollFinialRight woodVariant={woodVariant} />
       </div>
     </div>
   );

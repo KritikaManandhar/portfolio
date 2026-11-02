@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
-import ParchmentScroll from "@/components/ui/ParchmentScroll";
+import ParchmentScroll, { ScrollWoodVariant } from "@/components/ui/ParchmentScroll";
 
 interface SkillItem {
   name: string;
@@ -33,6 +33,12 @@ interface ShelfScrollData {
   subtitle: string;
   icon: React.ReactNode;
   accentColor: string;
+  woodVariant: ScrollWoodVariant;
+  sealLabel: string;
+  tabColor: {
+    active: string;
+    inactive: string;
+  };
   skills: SkillItem[];
   footerNote: string;
 }
@@ -48,6 +54,13 @@ const SHELF_SCROLLS: ShelfScrollData[] = [
       "Foundational software logic, object-oriented paradigms, and system compilation.",
     icon: <Code className="w-4 h-4 text-[#6B8A68]" />,
     accentColor: "border-[#6B8A68]/40 bg-[#6B8A68]/15 text-[#6B8A68]",
+    woodVariant: "sage",
+    sealLabel: "Folio 01 • Programming & Algorithms",
+    tabColor: {
+      active: "bg-[#4A6947] text-white border-[#3B5439] shadow-xs scale-102 font-medium",
+      inactive:
+        "bg-[#FAF5E8]/90 text-[#3B5439] border-[#6B8A68]/40 hover:bg-[#EFF5EC] hover:border-[#4A6947]",
+    },
     skills: [
       {
         name: "JavaScript",
@@ -88,6 +101,13 @@ const SHELF_SCROLLS: ShelfScrollData[] = [
       "Semantic web markup, responsive UI layouts, relational schemas, and ACID transactions.",
     icon: <Database className="w-4 h-4 text-[#D0684D]" />,
     accentColor: "border-[#D0684D]/40 bg-[#D0684D]/15 text-[#D0684D]",
+    woodVariant: "amber",
+    sealLabel: "Folio 02 • Web Architectures & Database Systems",
+    tabColor: {
+      active: "bg-[#C25B38] text-white border-[#9E4424] shadow-xs scale-102 font-medium",
+      inactive:
+        "bg-[#FAF5E8]/90 text-[#9E4424] border-[#D0684D]/40 hover:bg-[#FBF0E8] hover:border-[#C25B38]",
+    },
     skills: [
       {
         name: "HTML5",
@@ -117,12 +137,19 @@ const SHELF_SCROLLS: ShelfScrollData[] = [
     id: "design-training",
     chapterNumber: "03",
     shortTitle: "Design & Training",
-    badgeLabel: "Specimen Folio 03 • UI Craft & Training",
-    title: "Design Tools & Certified Training",
+    badgeLabel: "Specimen Folio 03 • Design & Certified Training",
+    title: "Design Systems & Professional Web Training",
     subtitle:
       "Interactive wireframing, design systems, visual branding, and accredited professional training.",
-    icon: <Palette className="w-4 h-4 text-[#8C5835]" />,
-    accentColor: "border-[#C29B72]/50 bg-[#C29B72]/20 text-[#8C5835]",
+    icon: <Palette className="w-4 h-4 text-[#8C587A]" />,
+    accentColor: "border-[#945280]/40 bg-[#945280]/15 text-[#8C587A]",
+    woodVariant: "indigo",
+    sealLabel: "Folio 03 • Design Systems & Certified Training",
+    tabColor: {
+      active: "bg-[#7A3D68] text-white border-[#5D244D] shadow-xs scale-102 font-medium",
+      inactive:
+        "bg-[#FAF5E8]/90 text-[#7A3D68] border-[#945280]/40 hover:bg-[#F9EFF5] hover:border-[#7A3D68]",
+    },
     skills: [
       {
         name: "Figma",
@@ -135,10 +162,16 @@ const SHELF_SCROLLS: ShelfScrollData[] = [
         description: "Visual identity composition, presentation craft, and vector illustrations.",
       },
       {
-        name: "Web Design Training",
+        name: "Web Design Diploma",
         tag: "Broadway Infosys Nepal",
         description:
           "Comprehensive accredited diploma in modern responsive web design, UX standards, and frontend workflow.",
+      },
+      {
+        name: "Design Systems",
+        tag: "UI Component Architecture",
+        description:
+          "Modular color harmony, typography hierarchies, accessibility, and micro-interactions.",
       },
     ],
     footerNote:
@@ -150,11 +183,14 @@ export default function BotanistShelfSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [activeScrollIndex, setActiveScrollIndex] = useState<number>(0);
   const [sectionProgress, setSectionProgress] = useState<number>(0);
-  const [unrollProgress, setUnrollProgress] = useState<number>(0);
-  const [hasUnrolled, setHasUnrolled] = useState<boolean>(false);
+  const [openedScrolls, setOpenedScrolls] = useState<{ [key: number]: boolean }>({
+    0: false,
+    1: false,
+    2: false,
+  });
   const [bloomed, setBloomed] = useState<boolean>(false);
 
-  // Synchronize carousel slide & unroll with native window scroll progress
+  // Synchronize multi-scroll stage & unroll progress with native window scroll
   useEffect(() => {
     const handleScroll = () => {
       const section = sectionRef.current;
@@ -163,8 +199,7 @@ export default function BotanistShelfSection() {
       const rect = section.getBoundingClientRect();
       const totalDistance = rect.height - window.innerHeight;
       if (totalDistance <= 0) {
-        setUnrollProgress(1.0);
-        setHasUnrolled(true);
+        setOpenedScrolls({ 0: true, 1: true, 2: true });
         return;
       }
 
@@ -172,20 +207,25 @@ export default function BotanistShelfSection() {
       const progress = Math.max(0, Math.min(1, scrolledIntoSection / totalDistance));
       setSectionProgress(progress);
 
-      // Smooth unroll on entering section (first 18% of track)
-      const unroll = Math.max(0, Math.min(1, progress / 0.18));
-      if (unroll >= 0.88 || hasUnrolled) {
-        setHasUnrolled(true);
-        setUnrollProgress(1.0);
-      } else {
-        setUnrollProgress(unroll);
+      // Milestone unroll triggers:
+      // Scroll 0 unrolls during [0.00, 0.15]
+      // Scroll 1 unrolls during [0.33, 0.48]
+      // Scroll 2 unrolls during [0.67, 0.82]
+      if (progress >= 0.14) {
+        setOpenedScrolls((prev) => (prev[0] ? prev : { ...prev, 0: true }));
+      }
+      if (progress >= 0.47) {
+        setOpenedScrolls((prev) => (prev[1] ? prev : { ...prev, 1: true }));
+      }
+      if (progress >= 0.80) {
+        setOpenedScrolls((prev) => (prev[2] ? prev : { ...prev, 2: true }));
       }
 
       // Active chapter selection across the 300vh track
       let nextIndex = 0;
-      if (progress >= 0.65) {
+      if (progress >= 0.66) {
         nextIndex = 2;
-      } else if (progress >= 0.32) {
+      } else if (progress >= 0.33) {
         nextIndex = 1;
       } else {
         nextIndex = 0;
@@ -208,12 +248,26 @@ export default function BotanistShelfSection() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [hasUnrolled]);
+  }, []);
 
-  // Smoothly scroll window to target chapter slide
+  // Compute scroll-driven unroll progress for each individual scroll
+  const getScrollUnrollProgress = (index: number): number => {
+    if (openedScrolls[index]) return 1.0;
+
+    if (index === 0) {
+      return Math.max(0, Math.min(1, sectionProgress / 0.15));
+    } else if (index === 1) {
+      if (sectionProgress < 0.33) return 0.0;
+      return Math.max(0, Math.min(1, (sectionProgress - 0.33) / 0.15));
+    } else {
+      if (sectionProgress < 0.67) return 0.0;
+      return Math.max(0, Math.min(1, (sectionProgress - 0.67) / 0.15));
+    }
+  };
+
+  // Smoothly scroll window to target chapter milestone
   const scrollToScrollIndex = (targetIndex: number) => {
-    setHasUnrolled(true);
-    setUnrollProgress(1.0);
+    setOpenedScrolls((prev) => ({ ...prev, [targetIndex]: true }));
 
     const section = sectionRef.current;
     if (!section) return;
@@ -221,8 +275,8 @@ export default function BotanistShelfSection() {
     const totalDistance = section.offsetHeight - window.innerHeight;
     if (totalDistance <= 0) return;
 
-    // Target midpoints: Chapter 0: 0.18, Chapter 1: 0.50, Chapter 2: 0.82
-    const progressTargets = [0.18, 0.50, 0.82];
+    // Target midpoints: Chapter 0: 0.16, Chapter 1: 0.50, Chapter 2: 0.83
+    const progressTargets = [0.16, 0.50, 0.83];
     const targetY = section.offsetTop + progressTargets[targetIndex] * totalDistance;
 
     window.scrollTo({
@@ -231,6 +285,13 @@ export default function BotanistShelfSection() {
     });
 
     setActiveScrollIndex(targetIndex);
+    if (chimeEngine) {
+      chimeEngine.playPaperRustle();
+    }
+  };
+
+  const handleUnrollScroll = (index: number) => {
+    setOpenedScrolls((prev) => ({ ...prev, [index]: true }));
     if (chimeEngine) {
       chimeEngine.playPaperRustle();
     }
@@ -304,9 +365,7 @@ export default function BotanistShelfSection() {
                   type="button"
                   onClick={(e) => handleSelectTab(idx, e)}
                   className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-serif transition-all flex items-center gap-1.5 border cursor-pointer select-none ${
-                    isActive
-                      ? "bg-[#6B8A68] text-white border-[#536E50] shadow-xs scale-102 font-medium"
-                      : "bg-[#FAF5E8]/90 text-[#5C381E]/75 border-[#C29B72]/45 hover:bg-[#F3ECE1] hover:text-[#D0684D]"
+                    isActive ? s.tabColor.active : s.tabColor.inactive
                   }`}
                 >
                   <span className="text-[10px] font-mono opacity-80">
@@ -346,112 +405,113 @@ export default function BotanistShelfSection() {
           </div>
         </div>
 
-        {/* Master Unified Shelf Parchment Scroll */}
-        <div className="w-full max-w-[760px] mx-auto">
-          <ParchmentScroll
-            maxWidth="max-w-[760px]"
-            className="my-1 sm:my-1.5"
-            scrollAnimated
-            unrollProgress={hasUnrolled ? 1.0 : unrollProgress}
-            contentPadding="px-4 sm:px-6 md:px-7 py-3 sm:py-3.5"
-            sealLabel="Section 02 • Botanist Field Guide"
-            onUnroll={() => scrollToScrollIndex(0)}
-          >
-            {/* Sliding Chapter Manuscripts */}
-            <div className="relative overflow-hidden min-h-[350px] sm:min-h-[370px]">
-              {SHELF_SCROLLS.map((scroll, index) => {
-                const isCurrent = activeScrollIndex === index;
-                const offset = index - activeScrollIndex;
+        {/* 3 Distinct Physical Scrolls Stage */}
+        <div className="relative w-full max-w-[760px] mx-auto min-h-[440px] sm:min-h-[460px]">
+          {SHELF_SCROLLS.map((scroll, index) => {
+            const isActive = activeScrollIndex === index;
+            const offset = index - activeScrollIndex;
+            const scrollUnroll = getScrollUnrollProgress(index);
 
-                return (
-                  <div
-                    key={scroll.id}
-                    className={`w-full transition-all duration-350 ease-out ${
-                      isCurrent
-                        ? "opacity-100 translate-x-0 relative z-10 pointer-events-auto"
-                        : offset > 0
-                        ? "opacity-0 translate-x-8 absolute inset-0 pointer-events-none"
-                        : "opacity-0 -translate-x-8 absolute inset-0 pointer-events-none"
-                    }`}
-                  >
-                    {/* Scroll Header */}
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-wider border flex items-center gap-1.5 shadow-2xs ${scroll.accentColor}`}
+            return (
+              <div
+                key={scroll.id}
+                className={`w-full transition-all duration-500 cubic-bezier(0.22, 1, 0.36, 1) ${
+                  isActive
+                    ? "relative z-20 opacity-100 translate-x-0 scale-100 pointer-events-auto"
+                    : offset > 0
+                    ? "absolute inset-0 z-10 opacity-0 translate-x-12 scale-96 pointer-events-none"
+                    : "absolute inset-0 z-10 opacity-0 -translate-x-12 scale-96 pointer-events-none"
+                }`}
+              >
+                <ParchmentScroll
+                  maxWidth="max-w-[760px]"
+                  className="my-1 sm:my-1.5"
+                  scrollAnimated
+                  woodVariant={scroll.woodVariant}
+                  unrollProgress={scrollUnroll}
+                  contentPadding="px-4 sm:px-6 md:px-7 py-3 sm:py-3.5"
+                  sealLabel={scroll.sealLabel}
+                  onUnroll={() => handleUnrollScroll(index)}
+                >
+                  {/* Scroll Header */}
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-wider border flex items-center gap-1.5 shadow-2xs ${scroll.accentColor}`}
+                    >
+                      {scroll.icon}
+                      <span>{scroll.badgeLabel}</span>
+                    </span>
+
+                    <span className="text-[11px] font-mono text-[#5C381E]/60 italic hidden sm:inline">
+                      Chapter II • Scroll {scroll.chapterNumber}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#3D2E24] tracking-tight mb-1">
+                    {scroll.title}
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#5C381E]/80 mb-3 sm:mb-4 font-serif">
+                    {scroll.subtitle}
+                  </p>
+
+                  {/* Herbarium Specimens Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 mb-3">
+                    {scroll.skills.map((skill) => (
+                      <div
+                        key={skill.name}
+                        onClick={(e) =>
+                          triggerLeafBurst(e.clientX, e.clientY, true)
+                        }
+                        className={`p-2 sm:p-2.5 rounded-lg border transition-all cursor-pointer shadow-2xs select-none ${
+                          bloomed
+                            ? "bg-[#D0684D]/10 border-[#D0684D] scale-[1.02]"
+                            : "bg-[#FFFDF7] border-[#C29B72]/45 hover:border-[#6B8A68] hover:bg-[#FAF5E8]"
+                        }`}
                       >
-                        {scroll.icon}
-                        <span>{scroll.badgeLabel}</span>
-                      </span>
-
-                      <span className="text-[11px] font-mono text-[#5C381E]/60 italic hidden sm:inline">
-                        Chapter II • Scroll {scroll.chapterNumber}
-                      </span>
-                    </div>
-
-                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#3D2E24] tracking-tight mb-1">
-                      {scroll.title}
-                    </h3>
-                    <p className="text-xs sm:text-[13px] text-[#5C381E]/80 mb-3 sm:mb-4 font-serif">
-                      {scroll.subtitle}
-                    </p>
-
-                    {/* Herbarium Specimens Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 mb-3">
-                      {scroll.skills.map((skill) => (
-                        <div
-                          key={skill.name}
-                          onClick={(e) =>
-                            triggerLeafBurst(e.clientX, e.clientY, true)
-                          }
-                          className={`p-2 sm:p-2.5 rounded-lg border transition-all cursor-pointer shadow-2xs select-none ${
-                            bloomed
-                              ? "bg-[#D0684D]/10 border-[#D0684D] scale-[1.02]"
-                              : "bg-[#FFFDF7] border-[#C29B72]/45 hover:border-[#6B8A68] hover:bg-[#FAF5E8]"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-1.5">
-                              {bloomed ? (
-                                <Flower2 className="w-3 h-3 text-[#D0684D] animate-spin-slow" />
-                              ) : (
-                                <Leaf className="w-3 h-3 text-[#6B8A68]" />
-                              )}
-                              <span className="font-serif font-bold text-xs sm:text-[13px] text-[#3D2E24]">
-                                {skill.name}
-                              </span>
-                            </div>
-                            <span className="text-[9px] sm:text-[10px] font-mono text-[#C29B72] px-1.5 py-0.5 rounded-sm bg-[#FAF5E8] border border-[#C29B72]/30">
-                              {skill.tag}
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-1.5">
+                            {bloomed ? (
+                              <Flower2 className="w-3 h-3 text-[#D0684D] animate-spin-slow" />
+                            ) : (
+                              <Leaf className="w-3 h-3 text-[#6B8A68]" />
+                            )}
+                            <span className="font-serif font-bold text-xs sm:text-[13px] text-[#3D2E24]">
+                              {skill.name}
                             </span>
                           </div>
-                          <p className="text-[10px] sm:text-[11px] text-[#5C381E]/75 leading-snug">
-                            {skill.description}
-                          </p>
+                          <span className="text-[9px] sm:text-[10px] font-mono text-[#C29B72] px-1.5 py-0.5 rounded-sm bg-[#FAF5E8] border border-[#C29B72]/30">
+                            {skill.tag}
+                          </span>
                         </div>
-                      ))}
-                    </div>
-
-                    {/* Botanical Observation Footer */}
-                    <div className="pt-2 border-t border-[#C29B72]/40 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-[11px] text-[#5C381E]/70 font-serif italic">
-                      <span>{scroll.footerNote}</span>
-                      <span className="text-[#6B8A68] font-mono">
-                        Scroll {scroll.chapterNumber} of 03
-                      </span>
-                    </div>
+                        <p className="text-[10px] sm:text-[11px] text-[#5C381E]/75 leading-snug">
+                          {skill.description}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </ParchmentScroll>
+
+                  {/* Botanical Observation Footer */}
+                  <div className="pt-2 border-t border-[#C2986E]/40 flex flex-wrap items-center justify-between gap-1 text-[10px] sm:text-[11px] text-[#5C381E]/70 font-serif italic">
+                    <span>{scroll.footerNote}</span>
+                    <span className="text-[#6B8A68] font-mono">
+                      Scroll {scroll.chapterNumber} of 03
+                    </span>
+                  </div>
+                </ParchmentScroll>
+              </div>
+            );
+          })}
         </div>
 
         {/* Bottom Interactive Scroll Hint */}
         <div className="flex items-center justify-center gap-1.5 mt-2 text-[10px] sm:text-[11px] font-serif text-[#5C381E]/75 select-none pointer-events-none">
           <span className="w-1.5 h-1.5 rounded-full bg-[#6B8A68] animate-ping" />
           <span>
-            {activeScrollIndex < SHELF_SCROLLS.length - 1
-              ? `Scroll down to examine Chapter ${activeScrollIndex + 2}`
-              : "Scroll down to enter Field Journal"}
+            {activeScrollIndex === 0
+              ? "Scroll down to unfurl Scroll 02 • Web & Databases"
+              : activeScrollIndex === 1
+              ? "Scroll down to unfurl Scroll 03 • Design & Training"
+              : "Scroll down to enter Field Journal Projects"}
           </span>
           <ChevronDown className="w-3 h-3 text-[#6B8A68] animate-bounce" />
         </div>
