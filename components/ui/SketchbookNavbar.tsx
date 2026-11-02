@@ -11,14 +11,15 @@ import {
   Send,
   Feather,
   Flower2,
+  Compass,
 } from "lucide-react";
 import { chimeEngine } from "@/components/audio/ChimeEngine";
 import { triggerLeafBurst } from "@/components/particles/LeafParticleBurst";
 import { WindChimeIcon, GithubIcon } from "@/components/ui/VectorIcons";
 
 interface SketchbookNavbarProps {
-  currentFrame: number;
-  totalFrames: number;
+  currentFrame?: number;
+  totalFrames?: number;
   scrollProgress?: number;
 }
 
@@ -59,10 +60,10 @@ const NAV_ITEMS: NavItem[] = [
   {
     id: "greenhouse",
     chapter: "04",
-    label: "Flower Studio",
-    shortLabel: "Studio",
-    description: "Pressed Bookmark Craft",
-    icon: <Flower2 className="w-3.5 h-3.5" />,
+    label: "The Little World",
+    shortLabel: "World",
+    description: "Miniature Storybook World",
+    icon: <Compass className="w-3.5 h-3.5" />,
   },
   {
     id: "postbox",
@@ -75,8 +76,8 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function SketchbookNavbar({
-  currentFrame,
-  totalFrames,
+  currentFrame = 1,
+  totalFrames = 150,
   scrollProgress = 0,
 }: SketchbookNavbarProps) {
   const [chimesOn, setChimesOn] = useState<boolean>(() => {
@@ -265,19 +266,6 @@ export default function SketchbookNavbar({
 
         {/* Controls & Badges */}
         <div className="flex items-center gap-1.5 sm:gap-2.5">
-          {/* Scroll Frame Indicator */}
-          <div
-            className="px-2.5 py-1 rounded-full bg-[#FAF5E8] border border-[#C29B72]/40 text-[11px] font-mono text-[#3D2E24] flex items-center gap-1.5 shadow-2xs select-none"
-            title={`Canvas frame: ${currentFrame} of ${totalFrames}`}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#6B8A68] animate-pulse" />
-            <span className="hidden sm:inline">Frame</span>
-            <span>{String(currentFrame).padStart(3, "0")}</span>
-            <span className="text-[#C29B72] hidden sm:inline">
-              / {totalFrames}
-            </span>
-          </div>
-
           {/* Wind Chime Mute/Unmute Toggle */}
           <button
             type="button"
@@ -342,7 +330,7 @@ export default function SketchbookNavbar({
               <span>Sketchbook Chapters</span>
             </div>
             <span className="text-[10px] font-mono text-[#6B8A68] bg-[#6B8A68]/15 px-2 py-0.5 rounded-full border border-[#6B8A68]/30">
-              Frame {String(currentFrame).padStart(3, "0")} / {totalFrames}
+              {NAV_ITEMS.length} Chapters
             </span>
           </div>
 

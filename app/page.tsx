@@ -37,25 +37,25 @@ export default function Home() {
 
       let progress = 0;
       if (scrollY < t2) {
-        // Section 1 (Study): 0.00 -> 0.25
+        // Section 1 (Study): 0.00 -> 0.18
         const span = Math.max(1, t2 - t1);
-        progress = (scrollY / span) * 0.25;
+        progress = (scrollY / span) * 0.18;
       } else if (scrollY < t3) {
-        // Section 2 (Botanist Shelf carousel): 0.25 -> 0.50
+        // Section 2 (Botanist Shelf carousel): 0.18 -> 0.44
         const span = Math.max(1, t3 - t2);
-        progress = 0.25 + ((scrollY - t2) / span) * 0.25;
+        progress = 0.18 + ((scrollY - t2) / span) * 0.26;
       } else if (scrollY < t4) {
-        // Section 3 (Field Journal): 0.50 -> 0.75
+        // Section 3 (Field Journal): 0.44 -> 0.70
         const span = Math.max(1, t4 - t3);
-        progress = 0.50 + ((scrollY - t3) / span) * 0.25;
+        progress = 0.44 + ((scrollY - t3) / span) * 0.26;
       } else if (scrollY < t5) {
-        // Section 4 (Greenhouse): 0.75 -> 0.90
+        // Section 4 (Greenhouse / The Little World): 0.70 -> 0.88
         const span = Math.max(1, t5 - t4);
-        progress = 0.75 + ((scrollY - t4) / span) * 0.15;
+        progress = 0.70 + ((scrollY - t4) / span) * 0.18;
       } else {
-        // Section 5 (Sunset Postbox): 0.90 -> 1.00
+        // Section 5 (Sunset Postbox): 0.88 -> 1.00
         const span = Math.max(1, maxScroll - t5);
-        progress = 0.90 + Math.min(1, Math.max(0, (scrollY - t5) / span)) * 0.1;
+        progress = 0.88 + Math.min(1, Math.max(0, (scrollY - t5) / span)) * 0.12;
       }
 
       setScrollProgress(Math.min(1, Math.max(0, progress)));
@@ -83,7 +83,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="relative min-h-[800vh] w-full overflow-x-clip bg-[#FAF6F0] selection:bg-[#F4ACB7]/50 selection:text-[#3D352E]">
+    <main className="relative min-h-[1220vh] w-full overflow-x-clip bg-[#FAF6F0] selection:bg-[#F4ACB7]/50 selection:text-[#3D352E]">
       {/* 1. Global Interactive Click Particle Burst Engine */}
       <LeafParticleBurst />
 
