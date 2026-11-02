@@ -21,7 +21,54 @@ export default function SunsetPostboxSection() {
   const [airplaneFlying, setAirplaneFlying] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [originPos, setOriginPos] = useState<{ x: number; y: number } | null>(null);
+  const [unrollProgress, setUnrollProgress] = useState<number>(0);
+  const [hasUnrolled, setHasUnrolled] = useState<boolean>(false);
+  const sectionRef = React.useRef<HTMLElement | null>(null);
   const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+
+      const rect = section.getBoundingClientRect();
+      const vh = window.innerHeight;
+
+      // Near bottom of document: guaranteed open and stable
+      const isAtBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 120;
+
+      if (isAtBottom) {
+        setHasUnrolled(true);
+        setUnrollProgress(1.0);
+        return;
+      }
+
+      const totalDistance = rect.height - vh;
+      if (totalDistance <= 0) {
+        setHasUnrolled(true);
+        setUnrollProgress(1.0);
+        return;
+      }
+
+      // Begin unrolling earlier as section approaches viewport center
+      const enterOffset = vh * 0.75;
+      const scrolledIntoSection = enterOffset - rect.top;
+      const progress = Math.max(0, Math.min(1, scrolledIntoSection / (enterOffset + totalDistance * 0.35)));
+
+      if (progress >= 0.85 || hasUnrolled) {
+        setHasUnrolled(true);
+        setUnrollProgress(1.0);
+      } else {
+        setUnrollProgress(progress);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hasUnrolled]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -116,10 +163,30 @@ export default function SunsetPostboxSection() {
   return (
     <section
       id="postbox"
-      className="min-h-screen w-full flex items-center justify-center px-4 sm:px-6 pt-14 pb-6 relative z-10"
+      ref={sectionRef}
+      className="relative min-h-[200vh] w-full"
     >
-      <div ref={scrollRef} className="w-full flex justify-center">
-        <ParchmentScroll maxWidth="max-w-[840px]" isFolding={isFolding}>
+      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 pt-12 pb-6 relative z-10 overflow-hidden">
+        <div ref={scrollRef} className="w-full flex justify-center">
+          <ParchmentScroll
+            maxWidth="max-w-[840px]"
+            isFolding={isFolding}
+            scrollAnimated
+            unrollProgress={hasUnrolled ? 1.0 : unrollProgress}
+            sealLabel="Section 05 • Sunset Postbox Folio"
+            onUnroll={() => {
+              setHasUnrolled(true);
+              setUnrollProgress(1.0);
+              const section = sectionRef.current;
+              if (section) {
+                const totalDistance = section.offsetHeight - window.innerHeight;
+                window.scrollTo({
+                  top: section.offsetTop + 0.3 * totalDistance,
+                  behavior: "smooth",
+                });
+              }
+            }}
+          >
         {/* Section Header Tag */}
         <div className="flex items-center justify-between mb-3">
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wider text-[#D0684D] bg-[#D0684D]/15 border border-[#D0684D]/35 flex items-center gap-1.5 shadow-2xs">
@@ -220,6 +287,10 @@ export default function SunsetPostboxSection() {
                 action="https://api.web3forms.com/submit"
                 method="POST"
                 onSubmit={handleSubmit}
+                onFocus={() => {
+                  setHasUnrolled(true);
+                  setUnrollProgress(1.0);
+                }}
                 className="p-4 sm:p-5 rounded-lg bg-[#FFFDF7] border border-[#C29B72]/50 space-y-3 shadow-2xs relative"
               >
                 {/* Web3Forms Access Key */}
@@ -325,6 +396,7 @@ export default function SunsetPostboxSection() {
           <span>B.Sc. CSIT • Padmakanya Campus • Tribhuvan University</span>
         </div>
         </ParchmentScroll>
+        </div>
       </div>
 
       {/* 3D Origami Scroll Folding & Soaring Paper Airplane Animation */}

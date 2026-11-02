@@ -1,10 +1,19 @@
-import React from "react";
+"use client";
 
-interface ParchmentScrollProps {
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Sparkles, ChevronDown } from "lucide-react";
+import { chimeEngine } from "@/components/audio/ChimeEngine";
+
+export interface ParchmentScrollProps {
   children: React.ReactNode;
   maxWidth?: string; // e.g. "max-w-2xl", "max-w-[760px]"
   className?: string;
   isFolding?: boolean; // When true, folds the scroll inward into the origami plane
+  scrollAnimated?: boolean; // When true, enables scroll-driven growing and opening
+  unrollProgress?: number; // Optional 0.0 to 1.0 progress value override
+  sealLabel?: string; // Optional label displayed on the rolled seal when closed
+  contentPadding?: string; // Custom padding for inner sheet (e.g. for compact world view)
+  onUnroll?: () => void;
 }
 
 // Hand-Painted Turned Wooden Finial (Left)
@@ -125,18 +134,152 @@ export default function ParchmentScroll({
   maxWidth = "max-w-[760px]",
   className = "",
   isFolding = false,
+  scrollAnimated = false,
+  unrollProgress,
+  sealLabel,
+  contentPadding = "px-5 sm:px-8 md:px-10 py-5 sm:py-7",
+  onUnroll,
 }: ParchmentScrollProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  const [measuredHeight, setMeasuredHeight] = useState<number>(450);
+  const [internalProgress, setInternalProgress] = useState<number>(1.0);
+  const [isClient, setIsClient] = useState<boolean>(false);
+  const hasPlayedRustleRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Measure content height with ResizeObserver
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const update = () => {
+      if (contentRef.current) {
+        const h = contentRef.current.scrollHeight;
+        if (h > 0) setMeasuredHeight(h);
+      }
+    };
+    update();
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(update);
+      ro.observe(contentRef.current);
+      return () => ro.disconnect();
+    }
+  }, [children]);
+
+  // Viewport scroll observation when unrollProgress is not provided explicitly
+  useEffect(() => {
+    if (unrollProgress !== undefined || !scrollAnimated) return;
+
+    const handleScroll = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight;
+
+      // Start opening when top of element enters bottom of viewport
+      // Reach fully open when element top reaches 28% from top of viewport
+      const enter = vh;
+      const target = vh * 0.28;
+      const p = Math.max(0, Math.min(1, (enter - rect.top) / (enter - target)));
+      setInternalProgress(p);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [unrollProgress, scrollAnimated]);
+
+  // Compute effective progress
+  const targetProgress =
+    unrollProgress !== undefined
+      ? Math.max(0, Math.min(1, unrollProgress))
+      : scrollAnimated
+      ? internalProgress
+      : 1.0;
+
+  // On initial SSR/server, render fully open for SEO & accessibility
+  const effectiveProgress = isClient ? targetProgress : 1.0;
+  const isFullyOpen = effectiveProgress >= 0.96;
+
+  // Play gentle rustle sound when unrolling starts
+  useEffect(() => {
+    if (effectiveProgress > 0.1 && !hasPlayedRustleRef.current) {
+      hasPlayedRustleRef.current = true;
+      if (chimeEngine) chimeEngine.playPaperRustle();
+    } else if (effectiveProgress <= 0.05) {
+      hasPlayedRustleRef.current = false;
+    }
+  }, [effectiveProgress]);
+
+  const handleOpenFolio = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (onUnroll) {
+        onUnroll();
+      } else if (containerRef.current) {
+        containerRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      if (chimeEngine) chimeEngine.playPaperRustle();
+    },
+    [onUnroll]
+  );
+
+  // Focus capture to ensure keyboard accessibility
+  const handleFocusCapture = useCallback(() => {
+    if (effectiveProgress < 0.9) {
+      setInternalProgress(1.0);
+    }
+  }, [effectiveProgress]);
+
+  // Dimensions & Scale calculation with natural physical easing
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+  const easedProgress = easeOutCubic(effectiveProgress);
+
+  const minClosedHeight = 36;
+  const currentHeight = Math.round(
+    minClosedHeight + easedProgress * (measuredHeight - minClosedHeight)
+  );
+  // Scale grows from 0.93 to 1.00 as it unrolls
+  const currentScale = 0.93 + 0.07 * easedProgress;
+  // Content translateY reveals gently
+  const contentTranslateY = Math.round((1 - easedProgress) * 18);
+  // Content opacity
+  const contentOpacity = isFullyOpen
+    ? 1
+    : Math.max(0, (effectiveProgress - 0.10) / 0.90);
+
   return (
     <div
+      ref={containerRef}
+      onFocusCapture={handleFocusCapture}
       className={`relative w-full ${maxWidth} mx-auto my-3 sm:my-5 ${
-        isFolding ? "pointer-events-none" : "scale-100 rotate-0 opacity-100"
+        isFolding ? "pointer-events-none" : "rotate-0"
       } ${className}`}
+      style={{
+        transform: isFolding
+          ? undefined
+          : `scale(${currentScale})`,
+        transformOrigin: "top center",
+        transition: isFolding
+          ? undefined
+          : isFullyOpen
+          ? "transform 0.2s ease-out"
+          : "transform 0.1s ease-out",
+      }}
     >
       {/* 1. BRAIDED SILK HANGING CORD (Artisanal Hanging Loop) */}
       <div
         className={`flex justify-center -mb-2 sm:-mb-3 pointer-events-none select-none relative z-30 transition-all duration-300 ease-out ${
           isFolding ? "opacity-0 -translate-y-8" : "opacity-100 translate-y-0"
         }`}
+        style={{
+          transform: isFolding
+            ? undefined
+            : `translateY(${(1 - effectiveProgress) * -4}px)`,
+        }}
       >
         <svg
           viewBox="0 0 160 28"
@@ -158,11 +301,11 @@ export default function ParchmentScroll({
         </svg>
       </div>
 
-      {/* 2. TOP WOODEN SCROLL ROLLER (Detaches and rolls away during crumple) */}
+      {/* 2. TOP WOODEN SCROLL ROLLER */}
       <div
-        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_5px_12px_rgba(40,18,8,0.32)] transition-all duration-500 ease-out ${
+        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_5px_12px_rgba(40,18,8,0.32)] ${
           isFolding
-            ? "-translate-y-36 rotate-[-18deg] opacity-0 scale-95 pointer-events-none"
+            ? "transition-all duration-500 ease-out -translate-y-36 rotate-[-18deg] opacity-0 scale-95 pointer-events-none"
             : "translate-y-0 rotate-0 opacity-100 scale-100"
         }`}
       >
@@ -182,7 +325,7 @@ export default function ParchmentScroll({
           <div className="absolute top-[68%] inset-x-0 h-[1.5px] bg-[#6E3C18]/60 shadow-[0_1px_1px_rgba(255,255,255,0.35)]" />
           {/* Cylindrical Top Specular Light Sheen */}
           <div className="absolute top-[2px] inset-x-0 h-[2.5px] bg-white/45 blur-[0.5px]" />
-          {/* Fine Japanese Paper Fiber Striations */}
+          {/* Fine Paper Fiber Striations */}
           <div
             className="absolute inset-0 opacity-15 pointer-events-none"
             style={{
@@ -195,16 +338,43 @@ export default function ParchmentScroll({
         <ScrollFinialRight />
       </div>
 
-      {/* 3. THE UNROLLED PARCHMENT SHEET (Buckles and crumples into the paper wad) */}
+      {/* ROLLED FOLIO SEAL BUTTON (Visible when scroll is rolled or opening) */}
+      {effectiveProgress < 0.72 && !isFolding && (
+        <div
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-35 flex items-center justify-center pointer-events-auto select-none transition-opacity duration-300 px-4"
+          style={{ opacity: Math.max(0, 1 - effectiveProgress * 1.5) }}
+        >
+          <button
+            type="button"
+            onClick={handleOpenFolio}
+            className="px-3.5 py-1.5 rounded-full bg-[#FAF4E6]/95 hover:bg-[#FFFDF7] border-2 border-[#B99A60]/85 shadow-[0_4px_14px_rgba(40,18,8,0.28)] text-[#5C381E] text-xs font-serif font-semibold flex items-center gap-1.5 transition-all cursor-pointer hover:scale-105 active:scale-95"
+            title="Unfurl this scroll folio"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-[#B99A60]" />
+            <span>{sealLabel || "Scroll or Click to Unfurl Folio"}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-[#B99A60] animate-bounce" />
+          </button>
+        </div>
+      )}
+
+      {/* 3. THE UNROLLED PARCHMENT SHEET */}
       <div
-        style={
-          isFolding
+        style={{
+          ...(isFolding
             ? {
                 animation: "sheet-crumple 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards",
               }
-            : undefined
-        }
-        className="relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm overflow-hidden bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 border-[#C2986E]/75"
+            : {}),
+          height: isFullyOpen ? "auto" : `${currentHeight}px`,
+          transition: isFolding
+            ? undefined
+            : isFullyOpen
+            ? "none"
+            : "height 0.12s cubic-bezier(0.25, 1, 0.5, 1)",
+        }}
+        className={`relative z-10 -my-1 sm:-my-1.5 mx-1.5 sm:mx-2.5 md:mx-3.5 rounded-sm bg-[#FAF4E6] shadow-[0_16px_40px_-8px_rgba(35,16,6,0.32),0_4px_14px_rgba(50,22,8,0.12)] border-x-2 border-[#C2986E]/75 ${
+          isFullyOpen ? "overflow-visible" : "overflow-hidden"
+        }`}
       >
         {/* Multi-Tone Watercolor Rice-Paper Wash */}
         <div
@@ -231,13 +401,10 @@ export default function ParchmentScroll({
             preserveAspectRatio="none"
             fill="none"
           >
-            {/* Shaded Valley Facets */}
             <polygon points="0,0 260,240 110,490 0,500" fill="rgba(55,24,6,0.22)" />
             <polygon points="500,0 240,260 410,500 500,500" fill="rgba(65,30,8,0.25)" />
             <polygon points="120,0 250,250 380,0" fill="rgba(40,16,4,0.18)" />
             <polygon points="250,250 140,500 360,500" fill="rgba(40,16,4,0.2)" />
-
-            {/* Deep Crease Valleys */}
             <path
               d="M 15 25 L 245 255 L 75 485 M 485 15 L 255 245 L 425 485 M 35 250 L 465 245 M 245 15 L 255 485 M 115 65 L 385 435 M 385 65 L 115 435"
               stroke="#3A1705"
@@ -246,7 +413,6 @@ export default function ParchmentScroll({
               strokeLinejoin="round"
               opacity="0.9"
             />
-            {/* Secondary Crease Lines */}
             <path
               d="M 45 125 L 250 250 L 135 375 M 455 125 L 250 250 L 365 375"
               stroke="#7A3D14"
@@ -254,7 +420,6 @@ export default function ParchmentScroll({
               strokeLinecap="round"
               opacity="0.85"
             />
-            {/* Crisp Peak Highlight Ridges */}
             <path
               d="M 18 22 L 242 252 L 78 482 M 482 18 L 252 242 M 35 247 L 465 242 M 118 62 L 382 432"
               stroke="#FFFDF6"
@@ -265,10 +430,25 @@ export default function ParchmentScroll({
           </svg>
         )}
 
-        {/* Inner Content Area */}
+        {/* Inner Content Area with Measurement Ref */}
         <div
-          className={`relative z-10 px-5 sm:px-8 md:px-10 py-5 sm:py-7 transition-all duration-300 ${
-            isFolding ? "filter blur-[1.5px] opacity-40 scale-95" : ""
+          ref={contentRef}
+          style={{
+            opacity: isFolding ? 0.4 : contentOpacity,
+            transform: isFolding
+              ? undefined
+              : isFullyOpen
+              ? "none"
+              : `translateY(${contentTranslateY}px)`,
+            pointerEvents: isFullyOpen || effectiveProgress > 0.8 ? "auto" : "none",
+            transition: isFolding
+              ? undefined
+              : isFullyOpen
+              ? "none"
+              : "opacity 0.12s ease-out, transform 0.12s ease-out",
+          }}
+          className={`relative z-10 ${contentPadding} ${
+            isFolding ? "filter blur-[1.5px] scale-95" : ""
           }`}
         >
           {/* Actual Section Content */}
@@ -276,13 +456,23 @@ export default function ParchmentScroll({
         </div>
       </div>
 
-      {/* 4. BOTTOM WOODEN SCROLL ROLLER (Detaches and drops away during crumple) */}
+      {/* 4. BOTTOM WOODEN SCROLL ROLLER (Follows parchment bottom down as it unrolls) */}
       <div
-        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_8px_18px_rgba(40,18,8,0.38)] transition-all duration-500 ease-out ${
+        className={`relative -mx-3 sm:-mx-5 md:-mx-7 z-30 flex items-center select-none pointer-events-none drop-shadow-[0_8px_18px_rgba(40,18,8,0.38)] ${
           isFolding
-            ? "translate-y-36 rotate-[18deg] opacity-0 scale-95 pointer-events-none"
-            : "translate-y-0 rotate-0 opacity-100 scale-100"
+            ? "transition-all duration-500 ease-out translate-y-36 rotate-[18deg] opacity-0 scale-95 pointer-events-none"
+            : "opacity-100 scale-100"
         }`}
+        style={{
+          transform: isFolding
+            ? undefined
+            : `rotate(${(1 - easedProgress) * 4}deg)`,
+          transition: isFolding
+            ? undefined
+            : isFullyOpen
+            ? "none"
+            : "transform 0.12s ease-out",
+        }}
       >
         <ScrollFinialLeft />
 
